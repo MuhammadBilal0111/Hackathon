@@ -129,11 +129,6 @@ export function FarmerProfileForm({
   };
 
   const onSubmit = async (data: FarmerProfileFormData) => {
-    if (!initialData?.userId) {
-      setSubmitError("User ID is required");
-      return;
-    }
-
     setIsSubmitting(true);
     setSubmitError(null);
     setSubmitSuccess(false);
@@ -142,8 +137,12 @@ export function FarmerProfileForm({
       // Prepare data for API (excluding avatar file for now, as API expects string URL)
       const { avatar, ...profileData } = data;
 
+      console.log("Submitting profile data:", profileData);
+
       // Call the API service to update profile
       const result = await updateProfile(profileData);
+
+      console.log("Profile update result:", result);
 
       setSubmitSuccess(true);
       onSuccess?.(data);

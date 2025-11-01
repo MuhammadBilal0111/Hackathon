@@ -294,48 +294,71 @@ export function AnalysisResults({
     }
     setIsSpeaking(true);
 
-    // Build comprehensive English text with all analysis details
-    let englishText = `Detected Crop: ${currentDetectedCrop}.\n`;
-    englishText += `Health Status: ${healthStatus}.\n`;
-    englishText += `Identified Pest or Disease: ${currentPestDisease}.\n`;
-    englishText += `${diseaseConfidence}% confidence.\n`;
-    englishText += `Severity Level: ${severity}.\n`;
-    englishText += `Affected Area: ${currentAffectedArea}.\n`;
-    englishText += `Estimated Recovery Time: ${currentEstimatedRecoveryTime}.\n`;
+    // Build comprehensive Urdu text directly from Gemini API (no translation needed!)
+    let urduText = `پہچانی گئی فصل: ${currentDetectedCrop}۔\n`;
 
-    // Add Treatment Plan
+    // Health Status in Urdu
+    const healthStatusUrdu =
+      healthStatus === "Healthy"
+        ? "صحت مند"
+        : healthStatus === "At Risk"
+        ? "خطرے میں"
+        : "نازک";
+    urduText += `صحت کی حالت: ${healthStatusUrdu}۔\n`;
+
+    urduText += `شناخت شدہ کیڑا یا بیماری: ${currentPestDisease}۔\n`;
+    urduText += `${diseaseConfidence}% اعتماد۔\n`;
+
+    // Severity in Urdu
+    const severityUrdu =
+      severity === "None"
+        ? "کوئی نہیں"
+        : severity === "Mild"
+        ? "ہلکا"
+        : severity === "Moderate"
+        ? "اعتدال پسند"
+        : "شدید";
+    urduText += `شدت کی سطح: ${severityUrdu}۔\n`;
+
+    urduText += `متاثرہ علاقہ: ${currentAffectedArea}۔\n`;
+    urduText += `متوقع بحالی کا وقت: ${currentEstimatedRecoveryTime}۔\n`;
+
+    // Add Treatment Plan in Urdu
     if (currentTreatmentPlan && currentTreatmentPlan.length > 0) {
-      englishText += `Recommended Treatment Plan:\n`;
+      urduText += `\nتجویز کردہ علاج کا منصوبہ:\n`;
       currentTreatmentPlan.forEach((treatment, index) => {
-        englishText += `${treatment.step}: ${treatment.description}.\n`;
+        urduText += `${treatment.step}: ${treatment.description}۔\n`;
       });
     }
 
-    // Add Preventive Measures
+    // Add Preventive Measures in Urdu
     if (currentPreventiveMeasures && currentPreventiveMeasures.length > 0) {
-      englishText += `Preventive Measures:\n`;
+      urduText += `\nاحتیاطی تدابیر:\n`;
       currentPreventiveMeasures.forEach((measure, index) => {
-        englishText += `${index + 1}. ${measure}.\n`;
+        urduText += `${index + 1}. ${measure}۔\n`;
       });
     }
 
-    // Add Additional Notes
+    // Add Additional Notes in Urdu
     if (currentAdditionalNotes && currentAdditionalNotes.trim()) {
-      englishText += `Additional Notes: ${currentAdditionalNotes}.\n`;
+      urduText += `\nاضافی نوٹس: ${currentAdditionalNotes}۔\n`;
     }
 
-    console.log("Converting English text to Urdu speech:", englishText);
+    console.log("=== Urdu Text from Gemini (No Translation) ===");
+    console.log(urduText);
+    console.log("===========================================");
 
     try {
-      // Call text-to-speech API
+      // Call text-to-speech API with Urdu text directly (skip translation)
       const response = await fetch("/api/text-to-speech", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          text: englishText,
+          text: urduText,
           targetLanguage: "ur-PK",
+          skipTranslation: true, // Use Urdu text directly, no translation needed!
         }),
       });
 

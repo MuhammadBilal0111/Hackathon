@@ -8,7 +8,7 @@ const GOOGLE_TRANSLATE_URL = process.env.GOOGLE_TRANSLATE_API_URL || "https://tr
 
 export async function POST(request: NextRequest) {
   try {
-    const { text, targetLanguage = "ur-PK" } = await request.json();
+    const { text, targetLanguage = "ur-PK", skipTranslation = false } = await request.json();
 
     if (!text) {
       return NextResponse.json({ error: "Text is required" }, { status: 400 });
@@ -25,29 +25,43 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Step 1: Translate English text to Urdu using Google Translate API
-    let urduText = text;
-    try {
-      const translateResponse = await axios.get(GOOGLE_TRANSLATE_URL, {
-        params: {
-          client: "gtx",
-          sl: "en", // Source: English
-          tl: "ur", // Target: Urdu
-          dt: "t",
-          q: text,
-        },
-        timeout: 10000,
-      });
+    console.log("=== TTS Request ===");
+    console.log("Text length:", text.length);
+    console.log("Target language:", targetLanguage);
+    console.log("Skip translation:", skipTranslation);
+    console.log("Text preview (first 200 chars):", text.substring(0, 200));
 
-      if (translateResponse.data && translateResponse.data[0]) {
-        // Google Translate returns array of translations
-        urduText = translateResponse.data[0]
-          .map((item: any) => item[0])
-          .join("");
+    // Use text directly if skipTranslation is true (Urdu from Gemini)
+    // Otherwise, translate English text to Urdu using Google Translate API
+    let urduText = text;
+    
+    if (!skipTranslation) {
+      try {
+        console.log("Translating text to Urdu...");
+        const translateResponse = await axios.get(GOOGLE_TRANSLATE_URL, {
+          params: {
+            client: "gtx",
+            sl: "en", // Source: English
+            tl: "ur", // Target: Urdu
+            dt: "t",
+            q: text,
+          },
+          timeout: 10000,
+        });
+
+        if (translateResponse.data && translateResponse.data[0]) {
+          // Google Translate returns array of translations
+          urduText = translateResponse.data[0]
+            .map((item: any) => item[0])
+            .join("");
+          console.log("Translation successful");
+        }
+      } catch (translateError: any) {
+        console.error("Translation failed:", translateError.message);
+        // Fallback: use original text if translation fails
       }
-    } catch (translateError: any) {
-      console.error("Translation failed:", translateError.message);
-      // Fallback: use original English text if translation fails
+    } else {
+      console.log("Using Urdu text directly from Gemini (no translation)");
     }
 
     // Step 2: Convert Urdu text to speech using SpeechActors API
@@ -55,10 +69,14 @@ export async function POST(request: NextRequest) {
     const requestPayload = {
       locale: "ur-PK", // Urdu (Pakistan)
       vid: "ur-PK-AsadNeural", // Asad voice for Urdu
-      text: urduText, // Translated Urdu text
+      text: urduText, // Urdu text (from Gemini or translated)
       speakingRate: 0, // Default speed
       pitch: 0, // Default pitch
     };
+
+    console.log("=== Sending to SpeechActors ===");
+    console.log("Payload:", JSON.stringify(requestPayload, null, 2));
+    console.log("================================");
 
     try {
 

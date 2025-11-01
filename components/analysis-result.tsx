@@ -294,18 +294,40 @@ export function AnalysisResults({
     }
     setIsSpeaking(true);
 
-    // Build English text to send to Sarvam AI for translation and speech
-    const englishText = `
-Detected Crop: ${detectedCrop}.
-Health Status: ${healthStatus}.
-Identified Pest or Disease: ${pestDisease}.
-Recommended Treatment Plan: ${treatmentPlan}.
-`.trim();
+    // Build comprehensive English text with all analysis details
+    let englishText = `Detected Crop: ${currentDetectedCrop}.\n`;
+    englishText += `Health Status: ${healthStatus}.\n`;
+    englishText += `Identified Pest or Disease: ${currentPestDisease}.\n`;
+    englishText += `${diseaseConfidence}% confidence.\n`;
+    englishText += `Severity Level: ${severity}.\n`;
+    englishText += `Affected Area: ${currentAffectedArea}.\n`;
+    englishText += `Estimated Recovery Time: ${currentEstimatedRecoveryTime}.\n`;
 
-    console.log("Converting English text to Hindi/Urdu speech:", englishText);
+    // Add Treatment Plan
+    if (currentTreatmentPlan && currentTreatmentPlan.length > 0) {
+      englishText += `Recommended Treatment Plan:\n`;
+      currentTreatmentPlan.forEach((treatment, index) => {
+        englishText += `${treatment.step}: ${treatment.description}.\n`;
+      });
+    }
+
+    // Add Preventive Measures
+    if (currentPreventiveMeasures && currentPreventiveMeasures.length > 0) {
+      englishText += `Preventive Measures:\n`;
+      currentPreventiveMeasures.forEach((measure, index) => {
+        englishText += `${index + 1}. ${measure}.\n`;
+      });
+    }
+
+    // Add Additional Notes
+    if (currentAdditionalNotes && currentAdditionalNotes.trim()) {
+      englishText += `Additional Notes: ${currentAdditionalNotes}.\n`;
+    }
+
+    console.log("Converting English text to Urdu speech:", englishText);
 
     try {
-      // Call Sarvam AI API for text-to-speech
+      // Call text-to-speech API
       const response = await fetch("/api/text-to-speech", {
         method: "POST",
         headers: {
@@ -313,17 +335,17 @@ Recommended Treatment Plan: ${treatmentPlan}.
         },
         body: JSON.stringify({
           text: englishText,
-          targetLanguage: "hi-IN", // Hindi - Sarvam AI supports hi-IN
+          targetLanguage: "ur-PK",
         }),
       });
 
       const data = await response.json();
 
       if (response.ok && data.audio && data.success) {
-        console.log("✅ Sarvam AI audio received, playing...");
+        console.log("✅ Audio received, playing...");
 
-        // Play the audio from Sarvam AI
-        const audio = new Audio(`data:audio/wav;base64,${data.audio}`);
+        // Play the audio
+        const audio = new Audio(`data:audio/mpeg;base64,${data.audio}`);
         audioRef.current = audio; // Store reference for stopping
 
         audio.onended = () => {
@@ -342,11 +364,13 @@ Recommended Treatment Plan: ${treatmentPlan}.
         await audio.play();
       } else {
         // Fallback to browser TTS if API fails
-        console.log("⚠️ Sarvam AI not available, using browser TTS fallback");
+        console.log(
+          "⚠️ Text-to-speech API not available, using browser TTS fallback"
+        );
         useBrowserUrduTTS();
       }
     } catch (error) {
-      console.error("Error during Sarvam AI speech:", error);
+      console.error("Error during text-to-speech:", error);
       // Fallback to browser TTS
       useBrowserUrduTTS();
     }
@@ -447,13 +471,35 @@ ${romanUrduTranslations["Recommended Treatment Plan"]}: ${treatmentPlan}.
       availableVoices.find((v) => v.lang.startsWith("en")) ||
       null;
 
-    // Build complete English text - all 4 fields with proper formatting
-    const fullText = `
-Detected Crop: ${detectedCrop}.
-Health Status: ${healthStatus}.
-Identified Pest or Disease: ${pestDisease}.
-Recommended Treatment Plan: ${treatmentPlan}.
-`.trim();
+    // Build comprehensive English text with all analysis details
+    let fullText = `Detected Crop: ${currentDetectedCrop}.\n`;
+    fullText += `Health Status: ${healthStatus}.\n`;
+    fullText += `Identified Pest or Disease: ${currentPestDisease}.\n`;
+    fullText += `${diseaseConfidence}% confidence.\n`;
+    fullText += `Severity Level: ${severity}.\n`;
+    fullText += `Affected Area: ${currentAffectedArea}.\n`;
+    fullText += `Estimated Recovery Time: ${currentEstimatedRecoveryTime}.\n`;
+
+    // Add Treatment Plan
+    if (currentTreatmentPlan && currentTreatmentPlan.length > 0) {
+      fullText += `Recommended Treatment Plan:\n`;
+      currentTreatmentPlan.forEach((treatment, index) => {
+        fullText += `${treatment.step}: ${treatment.description}.\n`;
+      });
+    }
+
+    // Add Preventive Measures
+    if (currentPreventiveMeasures && currentPreventiveMeasures.length > 0) {
+      fullText += `Preventive Measures:\n`;
+      currentPreventiveMeasures.forEach((measure, index) => {
+        fullText += `${index + 1}. ${measure}.\n`;
+      });
+    }
+
+    // Add Additional Notes
+    if (currentAdditionalNotes && currentAdditionalNotes.trim()) {
+      fullText += `Additional Notes: ${currentAdditionalNotes}.\n`;
+    }
 
     console.log("Speaking English text:", fullText);
 

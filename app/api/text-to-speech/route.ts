@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 
-// API configuration from environment variables
-const SPEECHACTORS_API_KEY = process.env.SPEECHACTOR_TTS as string;
-const SPEECHACTORS_GENERATE_URL = process.env.SPEECHACTORS_API_URL as string;
-const GOOGLE_TRANSLATE_URL = process.env.GOOGLE_TRANSLATE_API_URL as string;
+// API configuration from environment variables with fallbacks
+const SPEECHACTORS_API_KEY = process.env.NEXT_PUBLIC_SPEECHACTOR_TTS || "";
+const SPEECHACTORS_GENERATE_URL = process.env.SPEECHACTORS_API_URL || "https://api.speechactors.com/v1/generate";
+const GOOGLE_TRANSLATE_URL = process.env.GOOGLE_TRANSLATE_API_URL || "https://translate.googleapis.com/translate_a/single";
 
 export async function POST(request: NextRequest) {
   try {
@@ -51,15 +51,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Step 2: Convert Urdu text to speech using SpeechActors API
+    // Configure SpeechActors API request with Urdu (Pakistan) voice
+    const requestPayload = {
+      locale: "ur-PK", // Urdu (Pakistan)
+      vid: "ur-PK-AsadNeural", // Asad voice for Urdu
+      text: urduText, // Translated Urdu text
+      speakingRate: 0, // Default speed
+      pitch: 0, // Default pitch
+    };
+
     try {
-      // Configure SpeechActors API request with Urdu (Pakistan) voice
-      const requestPayload = {
-        locale: "ur-PK", // Urdu (Pakistan)
-        vid: "ur-PK-AsadNeural", // Asad voice for Urdu
-        text: urduText, // Translated Urdu text
-        speakingRate: 0, // Default speed
-        pitch: 0, // Default pitch
-      };
 
       const response = await axios.post(
         SPEECHACTORS_GENERATE_URL,
@@ -85,13 +86,38 @@ export async function POST(request: NextRequest) {
         translatedText: urduText, // Include translated text in response
       });
     } catch (apiError: any) {
-      console.error("SpeechActors API Error:", apiError.message);
+      console.error("=== SpeechActors API Error ===");
+      console.error("Error message:", apiError.message);
+      console.error("Response status:", apiError.response?.status);
+      
+      // Decode buffer response data
+      let errorDetails = apiError.response?.data;
+      if (errorDetails && Buffer.isBuffer(errorDetails)) {
+        const decodedError = errorDetails.toString('utf-8');
+        console.error("Response data (decoded):", decodedError);
+        try {
+          const parsedError = JSON.parse(decodedError);
+          console.error("Parsed error:", parsedError);
+          errorDetails = parsedError;
+        } catch (e) {
+          console.error("Could not parse error JSON");
+        }
+      } else {
+        console.error("Response data:", errorDetails);
+      }
+      
+      console.error("API Key length:", SPEECHACTORS_API_KEY?.length);
+      console.error("API Key (first 10 chars):", SPEECHACTORS_API_KEY?.substring(0, 10));
+      console.error("Request payload:", requestPayload);
+      console.error("Text length:", urduText?.length);
+      console.error("===========================");
 
       return NextResponse.json(
         {
           error: "SpeechActors API failed. Using fallback browser TTS.",
           fallback: true,
-          details: apiError.response?.data || apiError.message,
+          details: errorDetails || apiError.message,
+          message: typeof errorDetails === 'object' && errorDetails.message ? errorDetails.message : 'API request failed',
         },
         { status: apiError.response?.status || 500 }
       );

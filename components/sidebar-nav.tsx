@@ -24,12 +24,12 @@ interface NavItem {
 const navItems: NavItem[] = [
   {
     name: "Dashboard",
-    href: "/",
+    href: "/dashboard",
     icon: <LayoutDashboard className="w-5 h-5" />,
   },
   {
     name: "Crop Management",
-    href: "/crops",
+    href: "/crop-analysis",
     icon: <Leaf className="w-5 h-5" />,
   },
   {
@@ -83,8 +83,8 @@ export function SidebarNav() {
               className={cn(
                 "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
                 pathname === item.href
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent"
+                  ? "bg-green-primary text-green-primary-foreground hover:bg-green-primary-hover"
+                  : "text-sidebar-foreground hover:bg-green-primary-light hover:text-green-primary"
               )}
               title={collapsed ? item.name : undefined}
             >
@@ -102,7 +102,9 @@ export function SidebarNav() {
             href="/settings"
             className={cn(
               "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
-              "text-sidebar-foreground hover:bg-sidebar-accent"
+              pathname === "/settings"
+                ? "bg-green-primary text-green-primary-foreground hover:bg-green-primary-hover"
+                : "text-sidebar-foreground hover:bg-green-primary-light hover:text-green-primary"
             )}
             title={collapsed ? "Settings" : undefined}
           >
@@ -114,7 +116,7 @@ export function SidebarNav() {
 
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200 group"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-green-primary-light hover:text-green-primary transition-all duration-200 group"
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             <span className="text-lg font-semibold group-hover:scale-110 transition-transform">

@@ -81,11 +81,11 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="bg-gradient-to-b from-green-50/30 to-background">
+    <div className="bg-gradient-to-b from-green-50/30 to-background min-h-full">
       {/* Profile Header with Banner */}
       <div className="relative bg-gradient-to-r from-green-500 to-green-600 text-white">
-        <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10"></div>
-        <div className="relative max-w-5xl mx-auto px-6 py-12 max-h-screen">
+        <div className="absolute inset-0 opacity-10"></div>
+        <div className="relative max-w-5xl mx-auto px-6 py-12">
           <div className="flex items-center gap-4 mb-8">
             <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
               <svg

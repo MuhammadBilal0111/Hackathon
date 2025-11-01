@@ -22,6 +22,8 @@ export interface UpdateProfilePayload {
   phone?: string;
   farmSize?: string;
   crops?: string[];
+  primaryCrops?: string;
+  farmingExperience?: string;
 }
 
 export interface UpdateProfileResponse extends Profile {

@@ -19,11 +19,37 @@ import {
   Languages,
 } from "lucide-react";
 
+interface TreatmentStep {
+  step: string;
+  description: string;
+}
+
 interface AnalysisResultsProps {
   detectedCrop: string;
   healthStatus: "Healthy" | "At Risk" | "Critical";
   pestDisease: string;
-  treatmentPlan: string;
+  diseaseConfidence: number;
+  severity: "None" | "Mild" | "Moderate" | "Severe";
+  affectedArea: string;
+  treatmentPlan: TreatmentStep[];
+  preventiveMeasures: string[];
+  estimatedRecoveryTime: string;
+  additionalNotes: string;
+  // Bilingual support
+  detectedCrop_en?: string;
+  detectedCrop_ur?: string;
+  pestDisease_en?: string;
+  pestDisease_ur?: string;
+  affectedArea_en?: string;
+  affectedArea_ur?: string;
+  treatmentPlan_en?: TreatmentStep[];
+  treatmentPlan_ur?: TreatmentStep[];
+  preventiveMeasures_en?: string[];
+  preventiveMeasures_ur?: string[];
+  estimatedRecoveryTime_en?: string;
+  estimatedRecoveryTime_ur?: string;
+  additionalNotes_en?: string;
+  additionalNotes_ur?: string;
   onSave: () => void;
   onAskAI: () => void;
   isLoading?: boolean;
@@ -33,7 +59,27 @@ export function AnalysisResults({
   detectedCrop,
   healthStatus,
   pestDisease,
+  diseaseConfidence,
+  severity,
+  affectedArea,
   treatmentPlan,
+  preventiveMeasures,
+  estimatedRecoveryTime,
+  additionalNotes,
+  detectedCrop_en,
+  detectedCrop_ur,
+  pestDisease_en,
+  pestDisease_ur,
+  affectedArea_en,
+  affectedArea_ur,
+  treatmentPlan_en,
+  treatmentPlan_ur,
+  preventiveMeasures_en,
+  preventiveMeasures_ur,
+  estimatedRecoveryTime_en,
+  estimatedRecoveryTime_ur,
+  additionalNotes_en,
+  additionalNotes_ur,
   onSave,
   onAskAI,
   isLoading = false,
@@ -45,6 +91,50 @@ export function AnalysisResults({
     SpeechSynthesisVoice[]
   >([]);
   const [hasUrduVoice, setHasUrduVoice] = useState(false);
+  console.log(
+    detectedCrop_en,
+    detectedCrop_ur,
+    pestDisease_en,
+    pestDisease_ur,
+    affectedArea_en,
+    affectedArea_ur,
+    treatmentPlan_en,
+    treatmentPlan_ur,
+    preventiveMeasures_en,
+    preventiveMeasures_ur,
+    estimatedRecoveryTime_en,
+    estimatedRecoveryTime_ur,
+    additionalNotes_en,
+    additionalNotes_ur
+  );
+  // Helper to get content based on selected language
+  const isUrdu = selectedLanguage === "ur-PK";
+  const currentDetectedCrop =
+    isUrdu && detectedCrop_ur
+      ? detectedCrop_ur
+      : detectedCrop_en || detectedCrop;
+  const currentPestDisease =
+    isUrdu && pestDisease_ur ? pestDisease_ur : pestDisease_en || pestDisease;
+  const currentAffectedArea =
+    isUrdu && affectedArea_ur
+      ? affectedArea_ur
+      : affectedArea_en || affectedArea;
+  const currentTreatmentPlan =
+    isUrdu && treatmentPlan_ur
+      ? treatmentPlan_ur
+      : treatmentPlan_en || treatmentPlan;
+  const currentPreventiveMeasures =
+    isUrdu && preventiveMeasures_ur
+      ? preventiveMeasures_ur
+      : preventiveMeasures_en || preventiveMeasures;
+  const currentEstimatedRecoveryTime =
+    isUrdu && estimatedRecoveryTime_ur
+      ? estimatedRecoveryTime_ur
+      : estimatedRecoveryTime_en || estimatedRecoveryTime;
+  const currentAdditionalNotes =
+    isUrdu && additionalNotes_ur
+      ? additionalNotes_ur
+      : additionalNotes_en || additionalNotes;
 
   useEffect(() => {
     if (typeof window !== "undefined" && !window.speechSynthesis) {
@@ -301,19 +391,47 @@ Recommended Treatment Plan: ${treatmentPlan}.
   };
 
   const resultItems = [
-    { label: "Detected Crop", value: detectedCrop, color: "text-green-700" },
     {
-      label: "Health Status",
+      label: isUrdu ? "پہچانی گئی فصل" : "Detected Crop",
+      value: currentDetectedCrop,
+      color: "text-green-700",
+    },
+    {
+      label: isUrdu ? "صحت کی حالت" : "Health Status",
       value: healthStatus,
       icon: getHealthStatusIcon(healthStatus),
     },
-    { label: "Identified Pest/Disease", value: pestDisease },
     {
-      label: "Recommended Treatment Plan",
-      value: treatmentPlan,
-      color: "text-green-700",
+      label: isUrdu ? "شناخت شدہ کیڑا یا بیماری" : "Identified Pest/Disease",
+      value: currentPestDisease,
+      badge:
+        diseaseConfidence > 0
+          ? `${diseaseConfidence}% ${isUrdu ? "اعتماد" : "confidence"}`
+          : undefined,
+    },
+    {
+      label: isUrdu ? "شدت کی سطح" : "Severity Level",
+      value: severity,
+      color:
+        severity === "Severe"
+          ? "text-red-600"
+          : severity === "Moderate"
+          ? "text-orange-600"
+          : severity === "Mild"
+          ? "text-yellow-600"
+          : "text-green-600",
+    },
+    {
+      label: isUrdu ? "متاثرہ علاقہ" : "Affected Area",
+      value: currentAffectedArea,
+    },
+    {
+      label: isUrdu ? "متوقع بحالی کا وقت" : "Estimated Recovery Time",
+      value: currentEstimatedRecoveryTime,
+      color: "text-blue-700",
     },
   ];
+  console.log("PLan", currentTreatmentPlan, isUrdu, treatmentPlan_ur);
 
   return (
     <div className="space-y-6">
@@ -362,7 +480,6 @@ Recommended Treatment Plan: ${treatmentPlan}.
           )}
         </div>
       </div>
-
       {/* Speaking Indicator */}
       {isSpeaking && (
         <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg animate-pulse">
@@ -374,8 +491,7 @@ Recommended Treatment Plan: ${treatmentPlan}.
           </span>
         </div>
       )}
-
-      {/* Urdu Voice Info - Only show if Urdu selected */}
+      Urdu Voice Info - Only show if Urdu selected
       {selectedLanguage === "ur-PK" && !hasUrduVoice && !isSpeaking && (
         <div className="flex items-start gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
           <div className="text-2xl">💡</div>
@@ -392,7 +508,6 @@ Recommended Treatment Plan: ${treatmentPlan}.
           </div>
         </div>
       )}
-
       {/* Results Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {resultItems.map((item, index) => (
@@ -400,20 +515,76 @@ Recommended Treatment Plan: ${treatmentPlan}.
             <p className="text-sm font-medium text-muted-foreground mb-2">
               {item.label}
             </p>
-            <div className="flex items-center gap-2">
-              {item.icon && <div>{item.icon}</div>}
-              <p
-                className={`text-base font-semibold ${
-                  item.color || "text-foreground"
-                }`}
-              >
-                {item.value}
-              </p>
+            <div className="flex items-start gap-2">
+              {item.icon && <div className="mt-0.5">{item.icon}</div>}
+              <div className="flex-1">
+                <p
+                  className={`text-base font-semibold ${
+                    item.color || "text-foreground"
+                  }`}
+                >
+                  {item.value}
+                </p>
+                {item.badge && (
+                  <span className="inline-block mt-1 px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded-full">
+                    {item.badge}
+                  </span>
+                )}
+              </div>
             </div>
           </Card>
         ))}
       </div>
-
+      {/* Treatment Plan Section */}
+      {currentTreatmentPlan && currentTreatmentPlan.length > 0 && (
+        <Card className="p-6 bg-card border border-border">
+          <h3 className="text-lg font-bold text-foreground mb-4">
+            {isUrdu
+              ? "تجویز کردہ علاج کا منصوبہ"
+              : "Recommended Treatment Plan"}
+          </h3>
+          <div className="space-y-4">
+            {currentTreatmentPlan.map((treatment, index) => (
+              <div key={index} className="border-l-4 border-green-500 pl-4">
+                <h4 className="font-semibold text-green-700 mb-2">
+                  {treatment.step}
+                </h4>
+                <p className="text-sm text-foreground leading-relaxed">
+                  {treatment.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+      {/* Preventive Measures Section */}
+      {currentPreventiveMeasures && currentPreventiveMeasures.length > 0 && (
+        <Card className="p-4 bg-card border border-border">
+          <p className="text-sm font-medium text-muted-foreground mb-3">
+            {isUrdu ? "احتیاطی تدابیر" : "Preventive Measures"}
+          </p>
+          <ul className="space-y-2">
+            {currentPreventiveMeasures.map((measure, index) => (
+              <li
+                key={index}
+                className="flex items-start gap-2 text-sm text-foreground"
+              >
+                <span className="text-green-600 font-bold mt-0.5">•</span>
+                <span>{measure}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
+      {/* Additional Notes Section */}
+      {currentAdditionalNotes && currentAdditionalNotes.trim() !== "" && (
+        <Card className="p-4 bg-blue-50 border border-blue-200">
+          <p className="text-sm font-medium text-blue-900 mb-2">
+            {isUrdu ? "اضافی نوٹس" : "Additional Notes"}
+          </p>
+          <p className="text-sm text-blue-800">{currentAdditionalNotes}</p>
+        </Card>
+      )}
       {/* Action Buttons */}
       <div className="flex gap-3 pt-4">
         <Button

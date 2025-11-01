@@ -29,7 +29,7 @@ const navItems: NavItem[] = [
   },
   {
     name: "Crop Management",
-    href: "/crop-analysis",
+    href: "/crop-management",
     icon: <Leaf className="w-5 h-5" />,
   },
   {
@@ -44,7 +44,7 @@ const navItems: NavItem[] = [
   },
   {
     name: "AI Crop Analysis",
-    href: "/analysis",
+    href: "/crop-analysis",
     icon: <CropIcon className="w-5 h-5" />,
   },
   { name: "Profile", href: "/profile", icon: <Settings className="w-5 h-5" /> },

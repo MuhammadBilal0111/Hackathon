@@ -1,21 +1,29 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Link from "next/link"
-import { LayoutDashboard, Cloud, Leaf, Calendar, Settings, Menu, X } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import Link from "next/link";
+import {
+  LayoutDashboard,
+  Cloud,
+  Leaf,
+  Calendar,
+  Settings,
+  Menu,
+  X,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface NavItem {
-  label: string
-  icon: React.ReactNode
-  href: string
-  active?: boolean
+  label: string;
+  icon: React.ReactNode;
+  href: string;
+  active?: boolean;
 }
 
 export function Sidebar() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   const navItems: NavItem[] = [
     {
@@ -44,7 +52,7 @@ export function Sidebar() {
       icon: <Settings className="w-5 h-5" />,
       href: "#",
     },
-  ]
+  ];
 
   return (
     <>
@@ -56,11 +64,20 @@ export function Sidebar() {
         {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </button>
 
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 md:hidden z-20 backdrop-blur-sm"
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 h-screen w-64 bg-sidebar border-r border-sidebar-border transition-transform duration-300 md:translate-x-0 z-30",
-          isOpen ? "translate-x-0" : "-translate-x-full",
+          "fixed left-0 top-0 h-screen w-64 bg-sidebar border-r border-sidebar-border transition-transform duration-300 md:translate-x-0 z-30 overflow-y-auto",
+          isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         <div className="p-6">
@@ -69,7 +86,9 @@ export function Sidebar() {
             <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
               <Leaf className="w-5 h-5 text-sidebar-primary-foreground" />
             </div>
-            <h1 className="text-lg font-semibold text-sidebar-foreground">Smart Agro</h1>
+            <h1 className="text-lg font-semibold text-sidebar-foreground">
+              Smart Agro
+            </h1>
           </div>
 
           {/* Navigation */}
@@ -83,7 +102,7 @@ export function Sidebar() {
                   "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
                   item.active
                     ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent",
+                    : "text-sidebar-foreground hover:bg-sidebar-accent"
                 )}
               >
                 {item.icon}
@@ -93,9 +112,6 @@ export function Sidebar() {
           </nav>
         </div>
       </aside>
-
-      {/* Mobile Overlay */}
-      {isOpen && <div className="fixed inset-0 bg-black/20 md:hidden z-20" onClick={() => setIsOpen(false)} />}
     </>
-  )
+  );
 }

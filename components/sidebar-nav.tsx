@@ -24,12 +24,12 @@ interface NavItem {
 const navItems: NavItem[] = [
   {
     name: "Dashboard",
-    href: "/",
+    href: "/dashboard",
     icon: <LayoutDashboard className="w-5 h-5" />,
   },
   {
     name: "Crop Management",
-    href: "/crops",
+    href: "/crop-analysis",
     icon: <Leaf className="w-5 h-5" />,
   },
   {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -45,6 +45,7 @@ export function AnalysisResults({
     SpeechSynthesisVoice[]
   >([]);
   const [hasUrduVoice, setHasUrduVoice] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined" && !window.speechSynthesis) {
@@ -96,6 +97,16 @@ export function AnalysisResults({
     return () => {
       if (window.speechSynthesis.onvoiceschanged !== undefined) {
         window.speechSynthesis.onvoiceschanged = null;
+      }
+    };
+  }, []);
+
+  // Cleanup audio on component unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
       }
     };
   }, []);
@@ -170,88 +181,163 @@ export function AnalysisResults({
   const stopSpeaking = () => {
     if (typeof window !== "undefined") {
       window.speechSynthesis.cancel();
+
+      // Stop and cleanup audio if it's playing
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current = null;
+      }
+
       setIsSpeaking(false);
     }
   };
 
   const speakInUrdu = async () => {
-    if (!speechSupported || typeof window === "undefined") {
-      alert("Text-to-speech is not supported in your browser.");
+    if (typeof window === "undefined") {
       return;
     }
 
     // Cancel any ongoing speech
-    window.speechSynthesis.cancel();
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
     setIsSpeaking(true);
 
-    // Find Urdu voice, then try Hindi voice as fallback
-    let urduVoice =
-      availableVoices.find((v) => v.lang.toLowerCase().startsWith("ur")) ||
-      null;
+    // Build English text to send to Sarvam AI for translation and speech
+    const englishText = `
+Detected Crop: ${detectedCrop}.
+Health Status: ${healthStatus}.
+Identified Pest or Disease: ${pestDisease}.
+Recommended Treatment Plan: ${treatmentPlan}.
+`.trim();
 
-    // If no Urdu voice, try Hindi (similar pronunciation)
-    if (!urduVoice) {
-      urduVoice =
-        availableVoices.find(
-          (v) =>
-            v.lang.toLowerCase().includes("hi-in") ||
-            v.lang.toLowerCase().includes("hi_in")
-        ) || null;
+    console.log("Converting English text to Hindi/Urdu speech:", englishText);
+
+    try {
+      // Call Sarvam AI API for text-to-speech
+      const response = await fetch("/api/text-to-speech", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: englishText,
+          targetLanguage: "hi-IN", // Hindi - Sarvam AI supports hi-IN
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.audio && data.success) {
+        console.log("✅ Sarvam AI audio received, playing...");
+
+        // Play the audio from Sarvam AI
+        const audio = new Audio(`data:audio/wav;base64,${data.audio}`);
+        audioRef.current = audio; // Store reference for stopping
+
+        audio.onended = () => {
+          console.log("Audio playback completed");
+          setIsSpeaking(false);
+          audioRef.current = null;
+        };
+
+        audio.onerror = (error) => {
+          console.error("Audio playback error:", error);
+          audioRef.current = null;
+          // Fallback to browser TTS
+          useBrowserUrduTTS();
+        };
+
+        await audio.play();
+      } else {
+        // Fallback to browser TTS if API fails
+        console.log("⚠️ Sarvam AI not available, using browser TTS fallback");
+        useBrowserUrduTTS();
+      }
+    } catch (error) {
+      console.error("Error during Sarvam AI speech:", error);
+      // Fallback to browser TTS
+      useBrowserUrduTTS();
     }
 
-    // Only show alert on first click if no voice found
-    if (!urduVoice && !sessionStorage.getItem("urdu-voice-warning-shown")) {
-      sessionStorage.setItem("urdu-voice-warning-shown", "true");
-      console.log(
-        "💡 Tip: For authentic Urdu accent, install Urdu language pack from system settings. Currently using Roman Urdu pronunciation."
-      );
-    }
+    // Browser TTS fallback function
+    async function useBrowserUrduTTS() {
+      if (!speechSupported) {
+        alert("Text-to-speech is not supported in your browser.");
+        setIsSpeaking(false);
+        return;
+      }
 
-    // All four labels to speak in Urdu - Build complete text
-    // Use proper Urdu script when Urdu voice is available, otherwise use Roman Urdu
-    let fullText: string;
+      try {
+        // Find Urdu voice, then try Hindi voice as fallback
+        let urduVoice =
+          availableVoices.find((v) => v.lang.toLowerCase().startsWith("ur")) ||
+          null;
 
-    if (urduVoice) {
-      // Authentic Urdu with Urdu script
-      const healthStatusValue = urduTranslations[healthStatus];
-      const pestValue =
-        pestDisease === "None" ? urduTranslations["None"] : pestDisease;
+        // If no Urdu voice, try Hindi (similar pronunciation)
+        if (!urduVoice) {
+          urduVoice =
+            availableVoices.find(
+              (v) =>
+                v.lang.toLowerCase().includes("hi-in") ||
+                v.lang.toLowerCase().includes("hi_in")
+            ) || null;
+        }
 
-      fullText = `
+        // Only show alert on first click if no voice found
+        if (!urduVoice && !sessionStorage.getItem("urdu-voice-warning-shown")) {
+          sessionStorage.setItem("urdu-voice-warning-shown", "true");
+          console.log(
+            "💡 Tip: For authentic Urdu accent, install Urdu language pack from system settings. Currently using Roman Urdu pronunciation."
+          );
+        }
+
+        // Use proper Urdu script when Urdu voice is available, otherwise use Roman Urdu
+        let fullText: string;
+
+        if (urduVoice) {
+          // Authentic Urdu with Urdu script
+          const healthStatusValue = urduTranslations[healthStatus];
+          const pestValue =
+            pestDisease === "None" ? urduTranslations["None"] : pestDisease;
+
+          fullText = `
 ${urduTranslations["Detected Crop"]}: ${detectedCrop}۔
 ${urduTranslations["Health Status"]}: ${healthStatusValue}۔
 ${urduTranslations["Identified Pest/Disease"]}: ${pestValue}۔
 ${urduTranslations["Recommended Treatment Plan"]}: ${treatmentPlan}۔
 `.trim();
-    } else {
-      // Roman Urdu fallback for English-speaking voices
-      const healthStatusValue = romanUrduTranslations[healthStatus];
-      const pestValue =
-        pestDisease === "None" ? romanUrduTranslations["None"] : pestDisease;
+        } else {
+          // Roman Urdu fallback for English-speaking voices
+          const healthStatusValue = romanUrduTranslations[healthStatus];
+          const pestValue =
+            pestDisease === "None"
+              ? romanUrduTranslations["None"]
+              : pestDisease;
 
-      fullText = `
+          fullText = `
 ${romanUrduTranslations["Detected Crop"]}: ${detectedCrop}.
 ${romanUrduTranslations["Health Status"]}: ${healthStatusValue}.
 ${romanUrduTranslations["Identified Pest/Disease"]}: ${pestValue}.
 ${romanUrduTranslations["Recommended Treatment Plan"]}: ${treatmentPlan}.
 `.trim();
-    }
+        }
 
-    console.log("Speaking Urdu text:", fullText);
+        console.log("Speaking Urdu text (browser fallback):", fullText);
 
-    try {
-      // Speak all text at once - no delays
-      await speakSingleUtterance(
-        fullText,
-        urduVoice,
-        urduVoice ? urduVoice.lang : "ur-PK",
-        undefined
-      );
+        await speakSingleUtterance(
+          fullText,
+          urduVoice,
+          urduVoice ? urduVoice.lang : "ur-PK",
+          undefined
+        );
 
-      setIsSpeaking(false);
-    } catch (error) {
-      console.error("Error during Urdu speech:", error);
-      setIsSpeaking(false);
+        setIsSpeaking(false);
+      } catch (err) {
+        console.error("Browser TTS error:", err);
+        setIsSpeaking(false);
+      }
     }
   };
 

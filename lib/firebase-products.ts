@@ -178,7 +178,7 @@ export const getProductBySlug = async (
 export const updateProduct = async (
   productId: string,
   updates: Partial<CreateProductData>
-): Promise<void>  => {
+): Promise<void> => {
   try {
     const productRef = doc(db, "products", productId);
     const now = new Date().toISOString();
@@ -194,11 +194,7 @@ export const updateProduct = async (
     }
 
     await updateDoc(productRef, updateData);
-    const updatedSnap = await getDoc(productRef);
     console.log("Product updated successfully");
-    if (updatedSnap.exists()) {
-      return updatedSnap.data();
-    }
   } catch (error) {
     console.error("Error updating product:", error);
     throw new Error("Failed to update product");

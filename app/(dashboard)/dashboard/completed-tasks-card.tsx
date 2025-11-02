@@ -13,7 +13,7 @@ export function CompletedTasksCard({completedTasks, allTasks}: {completedTasks: 
             COMPLETED TASKS
           </p>
           <h3 className="text-4xl font-bold text-green-700">
-            {completedPercentage.toFixed(2)}%
+            {completedPercentage?.toFixed(2)}%
           </h3>
           <p className="text-xs text-muted-foreground mt-1">This month</p>
         </div>

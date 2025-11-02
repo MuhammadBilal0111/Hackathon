@@ -14,7 +14,7 @@ export default function ProductsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [priceRange, setPriceRange] = useState([0, 5000]);
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [sortBy, setSortBy] = useState("featured");
+  const [sortBy, setSortBy] = useState("price-low");
   const [searchQuery, setSearchQuery] = useState("");
 
   // Fetch products from Firebase on mount
@@ -166,10 +166,8 @@ export default function ProductsPage() {
                   onChange={(e) => setSortBy(e.target.value)}
                   className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground"
                 >
-                  <option value="featured">Featured</option>
                   <option value="price-low">Price: Low to High</option>
                   <option value="price-high">Price: High to Low</option>
-                  <option value="rating">Highest Rated</option>
                 </select>
               </div>
 
@@ -183,7 +181,7 @@ export default function ProductsPage() {
                     setSelectedCategory("all");
                     setPriceRange([0, 5000]);
                     setSearchQuery("");
-                    setSortBy("featured");
+                    setSortBy("price-low");
                   }}
                   className="w-full mt-6"
                 >

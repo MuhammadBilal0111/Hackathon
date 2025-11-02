@@ -2,12 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Heart, ShoppingCart, Star, Trash } from "lucide-react";
-import { DeleteProductModal } from "@/components/forms/delete-product-modal";
-import { useRouter } from "next/navigation";
+import { Heart, ShoppingCart, Star } from "lucide-react";
 
 interface Product {
   id: number;
@@ -25,24 +22,8 @@ interface Product {
 }
 
 export default function ProductCard({ product }: { product: Product }) {
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const router = useRouter();
-
-  const handleDeleteSuccess = () => {
-    router.refresh()
-    console.log(`Product ${product.name} deleted successfully`);
-  };
-
   return (
     <div className="relative">
-      {/* Delete Icon */}
-      <div 
-        className="absolute p-2 border border-gray-300 bg-red-500 shadow-lg z-10 top-[-15px] right-[-15px] rounded-full cursor-pointer hover:bg-red-600 transition-colors"
-        onClick={() => setIsDeleteModalOpen(true)}
-      >
-        <Trash className="w-4 h-4 text-white" />
-      </div>
-
       <Card className="overflow-hidden relative hover:shadow-lg transition-shadow duration-300 flex flex-col">
         <Link
           href={`/products/${product.slug}`}
@@ -109,14 +90,6 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
         </div>
       </Card>
-
-      {/* Delete Product Modal */}
-      <DeleteProductModal
-        product={product}
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onSuccess={handleDeleteSuccess}
-      />
     </div>
   );
 }

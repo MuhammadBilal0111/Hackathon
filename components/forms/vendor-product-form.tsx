@@ -199,6 +199,19 @@ export function VendorProductForm({
   // Create product helper
   async function handleCreateProduct(data: z.infer<typeof formSchema>) {
     try {
+      // Get vendor UID from localStorage
+      const userData = localStorage.getItem("user");
+      if (!userData) {
+        throw new Error("User not authenticated. Please log in again.");
+      }
+
+      const parsedUserData = JSON.parse(userData);
+      const vendorUid = parsedUserData.uid;
+
+      if (!vendorUid) {
+        throw new Error("Vendor UID not found. Please log in again.");
+      }
+
       // Upload image if exists
       let imageUrl = uploadedImageUrl || "";
       if (data.image && data.image instanceof File) {
@@ -208,6 +221,7 @@ export function VendorProductForm({
       const productData: CreateProductData = {
         name: data.name,
         vendor: data.vendor,
+        vendorUid: vendorUid, // Add vendor UID from localStorage
         price:
           typeof data.price === "string" ? parseFloat(data.price) : data.price,
         description: data.description,
@@ -220,6 +234,7 @@ export function VendorProductForm({
 
       console.log("📝 Product data being sent:", productData);
       console.log("📄 Description length:", productData.description.length);
+      console.log("👤 Vendor UID:", vendorUid);
 
       await createProduct(productData);
 
@@ -317,14 +332,6 @@ export function VendorProductForm({
 
   // Handle delete
   async function handleDelete() {
-    if (
-      !confirm(
-        "Are you sure you want to delete this product? This action cannot be undone."
-      )
-    ) {
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       await handleDeleteProduct();

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -14,9 +13,13 @@ import {
   ArrowRight,
   CheckCircle,
   Smartphone,
-  Leaf,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
+
+const Header = dynamic(() => import("@/components/shared/header"), {
+  ssr: false,
+});
 
 export default function Home() {
   const [selectedLanguage, setSelectedLanguage] = useState("en");
@@ -124,85 +127,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-lime-50 to-yellow-50">
-      {/* Header */}
-      <header className="border-b border-green-200/50 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-lime-500 rounded-xl flex items-center justify-center">
-                <Leaf className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-green-700 to-lime-600 bg-clip-text text-transparent">
-                AgriSmart
-              </span>
-            </div>
-
-            <nav className="hidden md:flex items-center space-x-8">
-              <a
-                href="#features"
-                className="text-gray-700 hover:text-green-600 transition-colors"
-              >
-                Features
-              </a>
-              <a
-                href="#how-it-works"
-                className="text-gray-700 hover:text-green-600 transition-colors"
-              >
-                How it Works
-              </a>
-              <a
-                href="#pricing"
-                className="text-gray-700 hover:text-green-600 transition-colors"
-              >
-                Pricing
-              </a>
-              <a
-                href="#contact"
-                className="text-gray-700 hover:text-green-600 transition-colors"
-              >
-                Contact
-              </a>
-            </nav>
-
-            <div className="flex items-center space-x-4">
-              <div className="flex bg-gray-100 rounded-lg p-1">
-                <button
-                  onClick={() => setSelectedLanguage("en")}
-                  className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
-                    selectedLanguage === "en"
-                      ? "bg-white text-green-600 shadow-sm"
-                      : "text-gray-600 hover:text-green-600"
-                  }`}
-                >
-                  EN
-                </button>
-                <button
-                  onClick={() => setSelectedLanguage("ur")}
-                  className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
-                    selectedLanguage === "ur"
-                      ? "bg-white text-green-600 shadow-sm"
-                      : "text-gray-600 hover:text-green-600"
-                  }`}
-                >
-                  اردو
-                </button>
-              </div>
-              <Link href="/login">
-                <Button
-                  variant="outline"
-                  className="border-green-200 text-green-700 hover:bg-green-50"
-                >
-                  Login
-                </Button>
-              </Link>
-              <Button className="bg-gradient-to-r from-green-600 to-lime-500 hover:from-green-700 hover:to-lime-600">
-                Sign Up
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
+      <Header selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} />
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="container mx-auto px-6 lg:px-8 py-20">
@@ -406,96 +331,13 @@ export default function Home() {
             <Button
               size="lg"
               variant="outline"
-              className="border-2 border-white text-white hover:bg-white hover:text-green-600 px-8 py-4 text-lg font-semibold transition-all duration-200"
+              className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-green-600 px-8 py-4 text-lg font-semibold transition-all duration-200"
             >
               Contact Sales
             </Button>
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-50 border-t border-gray-200 py-16">
-        <div className="container mx-auto px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-green-600 to-lime-500 rounded-lg flex items-center justify-center">
-                  <Leaf className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-xl font-bold text-gray-900">
-                  AgriSmart
-                </span>
-              </div>
-              <p className="text-gray-600">
-                Empowering Pakistani farmers with smart agricultural technology
-                and data-driven insights.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4 text-gray-900">Features</h4>
-              <ul className="space-y-2 text-gray-600">
-                <li className="hover:text-green-600 transition-colors cursor-pointer">
-                  Crop Analysis
-                </li>
-                <li className="hover:text-green-600 transition-colors cursor-pointer">
-                  Weather Insights
-                </li>
-                <li className="hover:text-green-600 transition-colors cursor-pointer">
-                  Annual Planning
-                </li>
-                <li className="hover:text-green-600 transition-colors cursor-pointer">
-                  Pest Control
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4 text-gray-900">Support</h4>
-              <ul className="space-y-2 text-gray-600">
-                <li className="hover:text-green-600 transition-colors cursor-pointer">
-                  Help Center
-                </li>
-                <li className="hover:text-green-600 transition-colors cursor-pointer">
-                  Contact Us
-                </li>
-                <li className="hover:text-green-600 transition-colors cursor-pointer">
-                  Documentation
-                </li>
-                <li className="hover:text-green-600 transition-colors cursor-pointer">
-                  Community
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4 text-gray-900">Company</h4>
-              <ul className="space-y-2 text-gray-600">
-                <li className="hover:text-green-600 transition-colors cursor-pointer">
-                  About Us
-                </li>
-                <li className="hover:text-green-600 transition-colors cursor-pointer">
-                  Careers
-                </li>
-                <li className="hover:text-green-600 transition-colors cursor-pointer">
-                  Privacy Policy
-                </li>
-                <li className="hover:text-green-600 transition-colors cursor-pointer">
-                  Terms of Service
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-300 mt-12 pt-8 text-center text-gray-600">
-            <p>
-              &copy; 2025 AgriSmart. All rights reserved. Made for Pakistani
-              farmers with ❤️
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

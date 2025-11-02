@@ -43,7 +43,7 @@ export default function LoginPage() {
 
       if (user) {
         toast.success("Welcome back!");
-        router.push("/products");
+        router.push("/dashboard");
       }
     } catch (err) {
       toast.error("An unexpected error occurred");
@@ -65,7 +65,7 @@ export default function LoginPage() {
 
       if (user) {
         toast.success("Welcome back!");
-        router.push("/products");
+        router.push("/dashboard");
       }
     } catch (err) {
       toast.error("An unexpected error occurred");

@@ -24,6 +24,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { PlanFormModal } from "./components/plan-form-modal";
 import { PlanDisplay } from "./components/plan-display";
 import { ConfirmDialog } from "./components/confirm-dialog";
+import { useLocalization } from "@/lib/localization";
 
 // Hardcoded user ID (can be easily replaced with Firebase Auth UID later)
 let USER_ID: string | undefined;
@@ -82,6 +83,7 @@ interface AnnualPlanData {
 }
 
 export default function AnnualPlanPage() {
+  const { t } = useLocalization();
   const [planData, setPlanData] = useState<AnnualPlanData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -99,18 +101,18 @@ export default function AnnualPlanPage() {
       if (planSnap.exists()) {
         const data = planSnap.data() as AnnualPlanData;
         setPlanData(data);
-        toast.success("Annual plan loaded successfully");
+        toast.success(t("planLoaded"));
       } else {
         // No plan exists, show modal
         setIsModalOpen(true);
       }
     } catch (error) {
       console.error("Error fetching plan:", error);
-      toast.error("Failed to load annual plan");
+      toast.error(t("failedToLoadPlan"));
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [t]);
 
   // Initial load
   useEffect(() => {
@@ -122,11 +124,11 @@ export default function AnnualPlanPage() {
     try {
       const planRef = doc(db, "annual_plans", USER_ID);
       await setDoc(planRef, data);
-      toast.success("Annual plan saved successfully");
+      toast.success(t("planSaved"));
       return true;
     } catch (error) {
       console.error("Error saving plan:", error);
-      toast.error("Failed to save plan to database");
+      toast.error(t("failedToSavePlan"));
       return false;
     }
   };
@@ -135,7 +137,7 @@ export default function AnnualPlanPage() {
   const handleGeneratePlan = async (formData: any) => {
     try {
       setIsGenerating(true);
-      toast.loading("Generating your annual farming plan...", {
+      toast.loading(t("generatingPlan"), {
         id: "generating",
       });
 
@@ -150,7 +152,7 @@ export default function AnnualPlanPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to generate plan");
+        throw new Error(errorData.error || t("failedToGeneratePlan"));
       }
 
       const result = await response.json();
@@ -162,7 +164,7 @@ export default function AnnualPlanPage() {
         if (saved) {
           setPlanData(result.data);
           setIsModalOpen(false);
-          toast.success("Annual plan generated successfully!", {
+          toast.success(t("planGenerated"), {
             id: "generating",
           });
         }
@@ -172,7 +174,7 @@ export default function AnnualPlanPage() {
     } catch (error: any) {
       console.error("Error generating plan:", error);
       toast.error(
-        error.message || "Failed to generate plan. Please try again.",
+        error.message || t("failedToGeneratePlan"),
         {
           id: "generating",
         }

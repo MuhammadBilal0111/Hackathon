@@ -1,21 +1,25 @@
 "use client";
 import { AlertCircle } from "lucide-react";
 import { Activity } from "./dashboard";
+import { useLocalization } from "@/lib/localization";
+
 export function PendingTasksCard({
   pendingTasks,
 }: {
   pendingTasks: Activity[];
 }) {
+  const { t } = useLocalization();
+  
   return (
     <div className="bg-card rounded-2xl p-6  shadow-sm border border-border hover:shadow-md transition-shadow">
       {pendingTasks.length == 0 ? (
-        <p className="text-sm text-muted-foreground">No pending tasks!</p>
+        <p className="text-sm text-muted-foreground">{t("noPendingTasks")}</p>
       ) : (
         <>
           <div className="flex items-start justify-between mb-6">
             <div>
               <p className="text-xs font-semibold text-muted-foreground tracking-wider mb-2">
-                PENDING TASKS
+                {t("pendingTasks").toUpperCase()}
               </p>
               <h3 className="text-4xl font-bold text-foreground">
                 {pendingTasks.length}
@@ -41,7 +45,7 @@ export function PendingTasksCard({
                     {task.title}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5 capitalize">
-                    {task.priority} priority
+                    {task.priority} {t("priority")}
                   </p>
                 </div>
               </div>
@@ -49,7 +53,7 @@ export function PendingTasksCard({
           </div>
           <div className="mt-4 pt-4 border-t border-border/50">
             <p className="text-xs text-muted-foreground">
-              Due today and upcoming days
+              {t("dueToday")}
             </p>
           </div>
         </>

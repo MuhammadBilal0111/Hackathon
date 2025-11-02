@@ -14,13 +14,17 @@ import {
   Settings,
   LogOut,
   DollarSign,
+  Languages,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logoutUser } from "@/lib/authService";
 import { toast } from "sonner";
+import { useLocalization } from "@/lib/localization";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface NavItem {
   name: string;
+  translationKey: string;
   href: string;
   icon: React.ReactNode;
 }
@@ -28,43 +32,52 @@ interface NavItem {
 const navItems: NavItem[] = [
   {
     name: "Dashboard",
+    translationKey: "dashboard",
     href: "/dashboard",
     icon: <LayoutDashboard className="w-5 h-5" />,
   },
   {
     name: "Annual Farming Plan",
+    translationKey: "annualPlan",
     href: "/annual-plan",
     icon: <TrendingUp className="w-5 h-5" />,
   },
   {
     name: "AI Crop Analysis",
+    translationKey: "aiCropAnalysis",
     href: "/crop-analysis",
     icon: <CropIcon className="w-5 h-5" />,
   },
   {
     name: "Crop Management",
+    translationKey: "cropManagement",
     href: "/crops",
     icon: <Leaf className="w-5 h-5" />,
   },
   {
     name: "Weather Forecast",
+    translationKey: "weatherForecast",
     href: "/weather",
     icon: <Cloud className="w-5 h-5" />,
   },
   {
     name: "Marketplace",
+    translationKey: "marketInsights",
     href: "/products",
     icon: <TrendingUp className="w-5 h-5" />,
   },
   {
     name: "Expense Tracker",
+    translationKey: "expenseTracker",
     href: "/expense-tracker",
     icon: <DollarSign className="w-5 h-5" />,
   },
-  // { name: "Profile", href: "/profile", icon: <Settings className="w-5 h-5" /> },
+  // { name: "Profile", translationKey: "profile", href: "/profile", icon: <Settings className="w-5 h-5" /> },
 ];
 
 export function SidebarNav() {
+  const { t } = useLocalization();
+  const { language, changeLanguage } = useLanguage();
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
@@ -72,9 +85,9 @@ export function SidebarNav() {
   const handleLogout = async () => {
     const { error } = await logoutUser();
     if (error) {
-      toast.error("Failed to log out. Please try again.");
+      toast.error(t("logoutFailed"));
     } else {
-      toast.success("Logged out successfully!");
+      toast.success(t("logoutSuccess"));
       router.push("/login");
     }
   };
@@ -95,7 +108,7 @@ export function SidebarNav() {
               collapsed ? "text-center text-xl" : "text-2xl"
             )}
           >
-            {collapsed ? "SK" : "Smart Kisaan"}
+            {collapsed ? "SK" : t("title")}
           </h1>
         </div>
 
@@ -111,11 +124,11 @@ export function SidebarNav() {
                   ? "bg-green-primary text-green-primary-foreground hover:bg-green-primary-hover"
                   : "text-sidebar-foreground hover:bg-green-primary-light hover:text-green-primary"
               )}
-              title={collapsed ? item.name : undefined}
+              title={collapsed ? t(item.translationKey as any) : undefined}
             >
               {item.icon}
               {!collapsed && (
-                <span className="text-sm font-medium">{item.name}</span>
+                <span className="text-sm font-medium">{t(item.translationKey as any)}</span>
               )}
             </Link>
           ))}
@@ -123,6 +136,50 @@ export function SidebarNav() {
 
         {/* Settings & Toggle */}
         <div className="border-t border-sidebar-border p-3 space-y-2">
+          {/* Language Switcher */}
+          <div className={cn(
+            "px-2 py-2",
+            collapsed && "flex justify-center"
+          )}>
+            {!collapsed && (
+              <div className="flex items-center gap-2 mb-2 px-2">
+                <Languages className="w-4 h-4 text-sidebar-foreground/70" />
+                <span className="text-xs font-medium text-sidebar-foreground/70">
+                  {t("languageLabel")}
+                </span>
+              </div>
+            )}
+            <div className={cn(
+              "flex bg-gray-100 rounded-lg p-1",
+              collapsed ? "flex-col gap-1" : "gap-1"
+            )}>
+              <button
+                onClick={() => changeLanguage("en")}
+                className={cn(
+                  "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                  language === "en"
+                    ? "bg-white text-green-600 shadow-sm"
+                    : "text-gray-600 hover:text-green-600"
+                )}
+                title={collapsed ? "English" : undefined}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => changeLanguage("ur")}
+                className={cn(
+                  "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                  language === "ur"
+                    ? "bg-white text-green-600 shadow-sm"
+                    : "text-gray-600 hover:text-green-600"
+                )}
+                title={collapsed ? "اردو" : undefined}
+              >
+                اردو
+              </button>
+            </div>
+          </div>
+
           {/* <Link
             href="/settings"
             className={cn(
@@ -131,11 +188,11 @@ export function SidebarNav() {
                 ? "bg-green-primary text-green-primary-foreground hover:bg-green-primary-hover"
                 : "text-sidebar-foreground hover:bg-green-primary-light hover:text-green-primary"
             )}
-            title={collapsed ? "Settings" : undefined}
+            title={collapsed ? t("settings") : undefined}
           >
             <Settings className="w-5 h-5" />
             {!collapsed && (
-              <span className="text-sm font-medium">Settings</span>
+              <span className="text-sm font-medium">{t("settings")}</span>
             )}
           </Link> */}
 
@@ -144,22 +201,22 @@ export function SidebarNav() {
             className={cn(
               "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-sidebar-foreground hover:bg-red-50 hover:text-red-600"
             )}
-            title={collapsed ? "Logout" : undefined}
+            title={collapsed ? t("logout") : undefined}
           >
             <LogOut className="w-5 h-5" />
-            {!collapsed && <span className="text-sm font-medium">Logout</span>}
+            {!collapsed && <span className="text-sm font-medium">{t("logout")}</span>}
           </button>
 
           <button
             onClick={() => setCollapsed(!collapsed)}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-green-primary-light hover:text-green-primary transition-all duration-200 group"
-            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            title={collapsed ? t("expandSidebar") : t("collapseSidebar")}
           >
             <span className="text-lg font-semibold group-hover:scale-110 transition-transform">
               {collapsed ? "→" : "←"}
             </span>
             {!collapsed && (
-              <span className="text-xs font-medium">Collapse</span>
+              <span className="text-xs font-medium">{t("collapse")}</span>
             )}
           </button>
         </div>

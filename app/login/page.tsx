@@ -19,8 +19,10 @@ import {
   getFriendlyErrorMessage,
 } from "@/lib/authService";
 import { toast } from "sonner";
+import { useLocalization } from "@/lib/localization";
 
 export default function LoginPage() {
+  const { t } = useLocalization();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
@@ -46,11 +48,11 @@ export default function LoginPage() {
       }
 
       if (user) {
-        toast.success("Welcome back!");
+        toast.success(t("login_welcome_back_toast"));
         router.push("/dashboard");
       }
     } catch (err) {
-      toast.error("An unexpected error occurred");
+      toast.error(t("unexpected_error_toast"));
       setIsLoading(false);
     }
   };
@@ -68,11 +70,11 @@ export default function LoginPage() {
       }
 
       if (user) {
-        toast.success("Welcome back!");
+        toast.success(t("login_welcome_back_toast"));
         router.push("/dashboard");
       }
     } catch (err) {
-      toast.error("An unexpected error occurred");
+      toast.error(t("unexpected_error_toast"));
       setIsGoogleLoading(false);
     }
   };
@@ -83,17 +85,17 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center p-4 bg-gray-50">
         <div className="w-full max-w-md space-y-3">
           <div className="text-center space-y-2">
-            <h2 className="text-3xl font-bold text-primary">Welcome back</h2>
-            <p className="text-gray-600">Please sign in to your account</p>
+            <h2 className="text-3xl font-bold text-primary">{t("login_welcome_back")}</h2>
+            <p className="text-gray-600">{t("login_please_signin")}</p>
           </div>
 
           <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
             <CardHeader className="space-y-1 pb-2">
               <CardTitle className="text-2xl font-semibold text-center text-primary">
-                Sign In
+                {t("login_sign_in")}
               </CardTitle>
               <CardDescription className="text-center text-gray-500">
-                Enter your credentials to access your account
+                {t("login_enter_credentials")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -101,12 +103,12 @@ export default function LoginPage() {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-sm font-medium">
-                      Email address
+                      {t("login_email_label")}
                     </Label>
                     <Input
                       id="email"
                       type="email"
-                      placeholder="Enter your email"
+                      placeholder={t("login_email_placeholder")}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -116,13 +118,13 @@ export default function LoginPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="password" className="text-sm font-medium">
-                      Password
+                      {t("login_password_label")}
                     </Label>
                     <div className="relative">
                       <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
-                        placeholder="Enter your password"
+                        placeholder={t("login_password_placeholder")}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -149,13 +151,13 @@ export default function LoginPage() {
                       type="checkbox"
                       className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                     />
-                    <span className="text-gray-600">Remember me</span>
+                    <span className="text-gray-600">{t("login_remember_me")}</span>
                   </label>
                   <a
                     href="#"
                     className="text-green-600 hover:text-green-800 font-medium hover:underline"
                   >
-                    Forgot password?
+                    {t("login_forgot_password")}
                   </a>
                 </div>
 
@@ -167,11 +169,11 @@ export default function LoginPage() {
                   {isLoading ? (
                     <div className="flex items-center space-x-2">
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Signing in...</span>
+                      <span>{t("login_signing_in")}</span>
                     </div>
                   ) : (
                     <div className="flex items-center space-x-2">
-                      <span>Sign In</span>
+                      <span>{t("login_sign_in")}</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </div>
                   )}
@@ -183,7 +185,7 @@ export default function LoginPage() {
                   </div>
                   <div className="relative flex justify-center text-sm">
                     <span className="px-4 bg-white text-gray-500">
-                      Or continue with
+                      {t("login_or_continue_with")}
                     </span>
                   </div>
                 </div>
@@ -210,12 +212,12 @@ export default function LoginPage() {
               </form>
 
               <div className="mt-6 text-center text-sm text-gray-600">
-                Don&apos;t have an account?{" "}
+                {t("login_no_account")}{" "}
                 <a
                   href="/signup"
                   className="text-green-600 hover:text-green-800 font-medium hover:underline"
                 >
-                  Sign up for free
+                  {t("login_signup_free")}
                 </a>
               </div>
             </CardContent>

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { CropPhotoForm } from '@/components/forms/crop-photo-form';
 import { AnalysisResults } from '@/components/analysis-result';

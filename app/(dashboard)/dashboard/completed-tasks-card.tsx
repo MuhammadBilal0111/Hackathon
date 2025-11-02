@@ -1,6 +1,8 @@
 "use client";
 import { CheckCircle } from "lucide-react";
 import { Activity } from "./dashboard";
+import { useLocalization } from "@/lib/localization";
+
 export function CompletedTasksCard({
   completedTasks,
   allTasks,
@@ -8,6 +10,7 @@ export function CompletedTasksCard({
   completedTasks: Activity[];
   allTasks: Activity[];
 }) {
+  const { t } = useLocalization();
   const completedPercentage = (completedTasks.length / allTasks.length) * 100;
   const completedCount = completedTasks.length;
   const totalTasks = allTasks.length;

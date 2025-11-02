@@ -3,8 +3,10 @@ import { Leaf, Loader2 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { getAllCrops, type Crop } from "@/lib/firebase-crops";
 import { toast } from "sonner";
+import { useLocalization } from "@/lib/localization";
 
 export function CropsCard({user}: {user?: string}) {
+  const { t } = useLocalization();
   const [crops, setCrops] = useState<Crop[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +56,7 @@ export function CropsCard({user}: {user?: string}) {
         <div className="flex items-center justify-center min-h-[200px]">
           <div className="text-center">
             <Loader2 className="w-8 h-8 animate-spin text-accent mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">Loading crops...</p>
+            <p className="text-sm text-muted-foreground">{t("loadingCrops")}</p>
           </div>
         </div>
       </div>
@@ -72,7 +74,7 @@ export function CropsCard({user}: {user?: string}) {
               onClick={fetchCrops}
               className="text-xs text-accent hover:text-accent/80 underline"
             >
-              Try again
+              {t("tryAgain")}
             </button>
           </div>
         </div>
@@ -85,10 +87,10 @@ export function CropsCard({user}: {user?: string}) {
       <div className="flex items-start justify-between mb-6">
         <div>
           <p className="text-xs font-semibold text-muted-foreground tracking-wider mb-2">
-            YOUR CROPS
+            {t("yourCropsTitle")}
           </p>
           <h3 className="text-2xl font-bold text-foreground">
-            {crops.length} Active Crops
+            {crops.length} {t("activeCropsCount")}
           </h3>
         </div>
         <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center">
@@ -99,8 +101,8 @@ export function CropsCard({user}: {user?: string}) {
         {crops.length === 0 ? (
           <div className="text-center py-8">
             <Leaf className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">No crops found</p>
-            <p className="text-xs text-muted-foreground mt-1">Add your first crop to get started</p>
+            <p className="text-sm text-muted-foreground">{t("noCropsFound")}</p>
+            <p className="text-xs text-muted-foreground mt-1">{t("addFirstCrop")}</p>
           </div>
         ) : (
           crops.map((crop) => (
@@ -124,10 +126,10 @@ export function CropsCard({user}: {user?: string}) {
                   crop.condition === 'fair' ? 'bg-yellow-100 text-yellow-800' :
                   'bg-red-100 text-red-800'
                 }`}>
-                  {crop.condition}
+                  {t(crop.condition as any)}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  Sown: {new Date(crop.sowDate).toLocaleDateString()}
+                  {t("sown")}: {new Date(crop.sowDate).toLocaleDateString()}
                 </span>
               </div>
             </div>

@@ -1,5 +1,6 @@
 "use client";
 import { Calendar } from "lucide-react";
+import { useLocalization } from "@/lib/localization";
 
 interface Activity {
   title: string;
@@ -25,6 +26,7 @@ interface UpcomingActivitiesCardProps {
 export function UpcomingActivitiesCard({
   planData,
 }: UpcomingActivitiesCardProps) {
+  const { t } = useLocalization();
   // Get upcoming months (current + next 2 months)
   const getUpcomingMonths = () => {
     const months = [
@@ -118,10 +120,10 @@ export function UpcomingActivitiesCard({
       <div className="flex items-start justify-between mb-6">
         <div>
           <p className="text-xs font-semibold text-muted-foreground tracking-wider mb-2">
-            UPCOMING ACTIVITIES
+            {t("upcomingActivitiesTitle")}
           </p>
           <h3 className="text-2xl font-bold text-foreground">
-            {upcomingActivities.length} Activities
+            {upcomingActivities.length} {t("upcomingActivities")}
           </h3>
         </div>
         <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center">
@@ -133,12 +135,12 @@ export function UpcomingActivitiesCard({
           <div className="text-center py-8">
             <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">
-              No upcoming activities
+              {t("noActivitiesPlanned")}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
               {!planData
-                ? "Loading annual plan..."
-                : "All activities completed"}
+                ? t("loadingAnnualPlan")
+                : t("allActivitiesCompleted")}
             </p>
           </div>
         ) : (
@@ -161,7 +163,7 @@ export function UpcomingActivitiesCard({
                         activity.status
                       )}`}
                     >
-                      {activity.status === "pending" ? "PENDING" : "COMPLETED"}
+                      {activity.status === "pending" ? t("urgent") : t("scheduled")}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground mb-2">

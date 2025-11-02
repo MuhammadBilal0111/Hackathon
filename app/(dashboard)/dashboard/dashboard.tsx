@@ -9,6 +9,7 @@ import { db } from "@/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useLocalization } from "@/lib/localization";
 
 export interface Activity {
   title: string;
@@ -61,6 +62,7 @@ if (typeof window !== "undefined") {
 }
 
 export function Dashboard() {
+  const { t } = useLocalization();
   const [planData, setPlanData] = useState<AnnualPlanData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [pendingTasks, setPendingTasks] = useState<Activity[]>([]); 
@@ -100,11 +102,11 @@ export function Dashboard() {
       }
     } catch (error) {
       console.error("Error fetching plan:", error);
-      toast.error("Failed to load annual plan");
+      toast.error(t("failedToLoadPlan"));
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [t]);
 
     useEffect(() => {
       fetchPlan();
@@ -118,10 +120,10 @@ export function Dashboard() {
         <div className="p-6 md:p-8">
           <div className="mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-              Welcome back, Farmer
+              {t("welcomeBack")}
             </h2>
             <p className="text-muted-foreground">
-              Here&apos;s an overview of your farm activities
+              {t("farmOverview")}
             </p>
           </div>
 

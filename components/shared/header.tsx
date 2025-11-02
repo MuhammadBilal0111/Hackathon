@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Leaf, User, LogOut } from "lucide-react";
 import { logoutUser } from "@/lib/authService";
 import { useRouter } from "next/navigation";
+import { useLocalization } from "@/lib/localization";
 
 export default function Header({
   selectedLanguage,
@@ -14,6 +15,7 @@ export default function Header({
   selectedLanguage: string;
   setSelectedLanguage: (lang: string) => void;
 }) {
+  const { t } = useLocalization();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState<string>("");
   const router = useRouter();
@@ -69,13 +71,13 @@ export default function Header({
               href="/"
               className="text-gray-700 hover:text-green-600 transition-colors font-medium"
             >
-              Home
+              {t("home")}
             </Link>
             <Link
               href="/products"
               className="text-gray-700 hover:text-green-600 transition-colors font-medium"
             >
-              Products
+              {t("products")}
             </Link>
             {isLoggedIn && (
               <>
@@ -83,19 +85,19 @@ export default function Header({
                   href="/vendors/dashboard"
                   className="text-gray-700 hover:text-green-600 transition-colors font-medium"
                 >
-                  Vendor Dashboard
+                  {t("vendorDashboard")}
                 </Link>
                 <Link
                   href="/dashboard"
                   className="text-gray-700 hover:text-green-600 transition-colors font-medium"
                 >
-                  Dashboard
+                  {t("dashboard")}
                 </Link>
                 <Link
                   href="/crops"
                   className="text-gray-700 hover:text-green-600 transition-colors font-medium"
                 >
-                  Crops
+                  {t("crops")}
                 </Link>
               </>
             )}
@@ -133,12 +135,12 @@ export default function Header({
                     variant="outline"
                     className="border-green-200 text-green-700 hover:bg-green-50"
                   >
-                    Login
+                    {t("login")}
                   </Button>
                 </Link>
                 <Link href="/signup">
                   <Button className="bg-gradient-to-r from-green-600 to-lime-500 hover:from-green-700 hover:to-lime-600">
-                    Sign Up
+                    {t("signup")}
                   </Button>
                 </Link>
               </>
@@ -156,10 +158,10 @@ export default function Header({
                   onClick={handleLogout}
                   variant="outline"
                   className="border-red-200 text-red-600 hover:bg-red-50 flex items-center gap-2"
-                  title="Logout"
+                  title={t("logout")}
                 >
                   <LogOut className="w-4 h-4" />
-                  Logout
+                  {t("logout")}
                 </Button>
               </div>
             )}

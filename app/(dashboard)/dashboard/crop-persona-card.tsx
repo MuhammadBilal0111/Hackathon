@@ -1,10 +1,10 @@
 'use client';
 
 import { Leaf, Zap } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useLocalization } from '@/lib/localization';
 
 export function CropPersonaCard() {
-  const { t } = useTranslation('common');
+  const { t } = useLocalization();
 
   return (
     <div className="bg-card rounded-xl p-6 shadow-sm border border-border">

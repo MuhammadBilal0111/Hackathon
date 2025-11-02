@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useLocalization } from '@/lib/localization';
 import { Card } from '@/components/ui/card';
 import { CropPhotoForm } from '@/components/forms/crop-photo-form';
 import { AnalysisResults } from '@/components/analysis-result';
@@ -21,7 +21,7 @@ interface FormData {
 }
 
 export default function AIAnalysisPage() {
-  const { t } = useTranslation('common');
+  const { t } = useLocalization();
   const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);

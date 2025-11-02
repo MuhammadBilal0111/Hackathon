@@ -19,8 +19,10 @@ import {
   getFriendlyErrorMessage,
 } from "@/lib/authService";
 import { toast } from "sonner";
+import { useLocalization } from "@/lib/localization";
 
 export default function SignupPage() {
+  const { t } = useLocalization();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
@@ -39,12 +41,12 @@ export default function SignupPage() {
 
     // Basic validation
     if (password.length < 6) {
-      toast.error("Password must be at least 6 characters long");
+      toast.error(t("signup_password_too_short_toast"));
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error(t("signup_passwords_no_match_toast"));
       return;
     }
 
@@ -60,11 +62,11 @@ export default function SignupPage() {
       }
 
       if (user) {
-        toast.success("Account created successfully! Welcome aboard!");
+        toast.success(t("signup_success_toast"));
         router.push(redirectTo);
       }
     } catch (err) {
-      toast.error("An unexpected error occurred");
+      toast.error(t("unexpected_error_toast"));
       setIsLoading(false);
     }
   };
@@ -82,11 +84,11 @@ export default function SignupPage() {
       }
 
       if (user) {
-        toast.success("Account created successfully! Welcome aboard!");
+        toast.success(t("signup_success_toast"));
         router.push(redirectTo);
       }
     } catch (err) {
-      toast.error("An unexpected error occurred");
+      toast.error(t("unexpected_error_toast"));
       setIsGoogleLoading(false);
     }
   };
@@ -98,20 +100,20 @@ export default function SignupPage() {
         <div className="w-full max-w-md space-y-3">
           <div className="text-center space-y-2">
             <h2 className="text-3xl font-bold text-primary">
-              Create an account
+              {t("signup_create_account")}
             </h2>
             <p className="text-gray-600">
-              Sign up to get started with your account
+              {t("signup_get_started")}
             </p>
           </div>
 
           <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
             <CardHeader className="space-y-1 pb-2">
               <CardTitle className="text-2xl font-semibold text-center text-primary">
-                Sign Up
+                {t("signup_title")}
               </CardTitle>
               <CardDescription className="text-center text-gray-500">
-                Enter your information to create your account
+                {t("signup_enter_information")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -119,12 +121,12 @@ export default function SignupPage() {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-sm font-medium">
-                      Email address
+                      {t("signup_email_label")}
                     </Label>
                     <Input
                       id="email"
                       type="email"
-                      placeholder="Enter your email"
+                      placeholder={t("signup_email_placeholder")}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -134,13 +136,13 @@ export default function SignupPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="password" className="text-sm font-medium">
-                      Password
+                      {t("signup_password_label")}
                     </Label>
                     <div className="relative">
                       <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
-                        placeholder="Create a password (min. 6 characters)"
+                        placeholder={t("signup_password_placeholder")}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -165,13 +167,13 @@ export default function SignupPage() {
                       htmlFor="confirmPassword"
                       className="text-sm font-medium"
                     >
-                      Confirm Password
+                      {t("signup_confirm_password_label")}
                     </Label>
                     <div className="relative">
                       <Input
                         id="confirmPassword"
                         type={showConfirmPassword ? "text" : "password"}
-                        placeholder="Confirm your password"
+                        placeholder={t("signup_confirm_password_placeholder")}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         required
@@ -202,11 +204,11 @@ export default function SignupPage() {
                   {isLoading ? (
                     <div className="flex items-center space-x-2">
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Creating account...</span>
+                      <span>{t("signup_creating_account")}</span>
                     </div>
                   ) : (
                     <div className="flex items-center space-x-2">
-                      <span>Create Account</span>
+                      <span>{t("signup_create_account_button")}</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </div>
                   )}
@@ -218,7 +220,7 @@ export default function SignupPage() {
                   </div>
                   <div className="relative flex justify-center text-sm">
                     <span className="px-4 bg-white text-gray-500">
-                      Or continue with
+                      {t("login_or_continue_with")}
                     </span>
                   </div>
                 </div>
@@ -245,12 +247,12 @@ export default function SignupPage() {
               </form>
 
               <div className="mt-6 text-center text-sm text-gray-600">
-                Already have an account?{" "}
+                {t("signup_already_have_account")}{" "}
                 <a
                   href="/login"
                   className="text-green-600 hover:text-green-800 font-medium hover:underline"
                 >
-                  Sign in
+                  {t("signup_sign_in")}
                 </a>
               </div>
             </CardContent>

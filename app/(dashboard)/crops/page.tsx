@@ -23,8 +23,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-import CropCard from "@/components/cards/crop-card";
-import CropForm from "@/components/forms/crop-form";
+import { CropsCard } from "../dashboard/crops-card";
 import { getAllCrops, type Crop } from "@/lib/firebase-crops";
 
 export default function CropsPage() {

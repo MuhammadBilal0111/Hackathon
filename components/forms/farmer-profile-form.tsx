@@ -31,44 +31,46 @@ import {
   Upload,
   Camera,
 } from "lucide-react";
+import { useLocalization } from "@/lib/localization";
 
 // Zod validation schema
-const farmerProfileSchema = z
-  .object({
-    name: z.string().min(2, "Name must be at least 2 characters").max(50),
-    email: z.string().email("Invalid email address"),
-    phone: z
-      .string()
-      .regex(/^[\d\s\-+$$$$]+$/, "Invalid phone number")
-      .min(10),
-    location: z.string().min(2, "Location is required").max(100),
-    primaryCrops: z.string().min(1, "Please select primary crops"),
-    farmingExperience: z
-      .string()
-      .min(1, "Please select farming experience level"),
-  })
-  .extend({
-    avatar: z
-      .any()
-      .refine(
-        (files) =>
-          !files || files.length === 0 || files?.[0]?.size <= 5 * 1024 * 1024,
-        "File size must be less than 5MB"
-      )
-      .refine(
-        (files) =>
-          !files ||
-          files.length === 0 ||
-          ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
-            files?.[0]?.type
-          ),
-        "Only JPEG, PNG, and WebP images are supported"
-      )
-      .transform((files) => (files && files.length > 0 ? files[0] : undefined))
-      .optional(),
-  });
+const getFarmerProfileSchema = (t: (key: string) => string) =>
+  z
+    .object({
+      name: z.string().min(2, t("validationNameMin")).max(50),
+      email: z.string().email(t("validationEmailInvalid")),
+      phone: z
+        .string()
+        .regex(/^[\d\s\-+$$$$]+$/, t("validationPhoneInvalid"))
+        .min(10),
+      location: z.string().min(2, t("validationLocationRequired")).max(100),
+      primaryCrops: z.string().min(1, t("validationPrimaryCropsRequired")),
+      farmingExperience: z
+        .string()
+        .min(1, t("validationFarmingExperienceRequired")),
+    })
+    .extend({
+      avatar: z
+        .any()
+        .refine(
+          (files) =>
+            !files || files.length === 0 || files?.[0]?.size <= 5 * 1024 * 1024,
+          t("validationImageSize")
+        )
+        .refine(
+          (files) =>
+            !files ||
+            files.length === 0 ||
+            ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
+              files?.[0]?.type
+            ),
+          t("validationImageType")
+        )
+        .transform((files) => (files && files.length > 0 ? files[0] : undefined))
+        .optional(),
+    });
 
-type FarmerProfileFormData = z.infer<typeof farmerProfileSchema>;
+type FarmerProfileFormData = z.infer<ReturnType<typeof getFarmerProfileSchema>>;
 
 interface FarmerProfileFormProps {
   initialData?: Partial<FarmerProfileFormData> & { userId: string };
@@ -99,10 +101,13 @@ export function FarmerProfileForm({
   initialData,
   onSuccess,
 }: FarmerProfileFormProps) {
+  const { t } = useLocalization();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+  const farmerProfileSchema = getFarmerProfileSchema(t);
 
   const {
     register,
@@ -134,12 +139,10 @@ export function FarmerProfileForm({
     setSubmitSuccess(false);
 
     try {
-      // Prepare data for API (excluding avatar file for now, as API expects string URL)
       const { avatar, ...profileData } = data;
 
       console.log("Submitting profile data:", profileData);
 
-      // Call the API service to update profile
       const result = await updateProfile(profileData);
 
       console.log("Profile update result:", result);
@@ -147,11 +150,10 @@ export function FarmerProfileForm({
       setSubmitSuccess(true);
       onSuccess?.(data);
 
-      // Reset success message after 3 seconds
       setTimeout(() => setSubmitSuccess(false), 3000);
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Failed to update profile";
+        error instanceof Error ? error.message : t("failedToUpdateProfile");
       setSubmitError(errorMessage);
       console.error("Profile update error:", error);
     } finally {
@@ -161,7 +163,6 @@ export function FarmerProfileForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* Profile Picture Section */}
       <Card className="border-2 border-dashed hover:border-green-400 transition-colors overflow-hidden">
         <CardContent className="pt-6">
           <div className="flex flex-col items-center justify-center space-y-4">
@@ -169,7 +170,7 @@ export function FarmerProfileForm({
               {avatarPreview ? (
                 <img
                   src={avatarPreview}
-                  alt="Avatar preview"
+                  alt={t("avatarPreview")}
                   className="w-32 h-32 rounded-full object-cover border-4 border-green-100 shadow-lg"
                 />
               ) : (
@@ -188,7 +189,7 @@ export function FarmerProfileForm({
                 className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
               >
                 <Upload className="w-4 h-4" />
-                {avatarPreview ? "Change Photo" : "Upload Photo"}
+                {avatarPreview ? t("changePhoto") : t("uploadPhoto")}
               </Label>
               <Input
                 id="avatar"
@@ -200,38 +201,37 @@ export function FarmerProfileForm({
                 className="hidden"
               />
               <p className="text-xs text-muted-foreground">
-                Max 5MB • JPEG, PNG, or WebP
+                {t("maxFileSize")}
               </p>
               {errors.avatar && (
                 <p className="text-sm text-red-500">
                   {typeof errors.avatar.message === "string"
                     ? errors.avatar.message
-                    : "Invalid file"}
+                    : t("invalidFile")}
                 </p>
               )}
             </div>
           </div>
         </CardContent>
       </Card>
-      {/* Personal Information Section */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
             <User className="w-5 h-5 text-green-600" />
-            <CardTitle>Personal Information</CardTitle>
+            <CardTitle>{t("personalInformation")}</CardTitle>
           </div>
-          <CardDescription>Your basic contact details</CardDescription>
+          <CardDescription>{t("basicContactDetails")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name" className="flex items-center gap-2">
                 <User className="w-4 h-4 text-muted-foreground" />
-                Full Name
+                {t("fullName")}
               </Label>
               <Input
                 id="name"
-                placeholder="John Doe"
+                placeholder={t("fullNamePlaceholder")}
                 {...register("name")}
                 className={errors.name ? "border-red-500" : ""}
               />
@@ -243,7 +243,7 @@ export function FarmerProfileForm({
             <div className="space-y-2">
               <Label htmlFor="phone" className="flex items-center gap-2">
                 <span className="text-muted-foreground">📞</span>
-                Phone Number
+                {t("phoneNumber")}
               </Label>
               <Input
                 id="phone"
@@ -261,7 +261,7 @@ export function FarmerProfileForm({
           <div className="space-y-2">
             <Label htmlFor="email" className="flex items-center gap-2">
               <span className="text-muted-foreground">✉️</span>
-              Email Address
+              {t("emailAddress")}
             </Label>
             <Input
               id="email"
@@ -276,23 +276,22 @@ export function FarmerProfileForm({
           </div>
         </CardContent>
       </Card>
-      {/* Location Section */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
             <MapPin className="w-5 h-5 text-green-600" />
-            <CardTitle>Farm Location</CardTitle>
+            <CardTitle>{t("farmLocation")}</CardTitle>
           </div>
-          <CardDescription>Where is your farm located?</CardDescription>
+          <CardDescription>{t("farmLocationDescription")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
           <Label htmlFor="location" className="flex items-center gap-2">
             <MapPin className="w-4 h-4 text-muted-foreground" />
-            Location
+            {t("location")}
           </Label>
           <Input
             id="location"
-            placeholder="City, State/Region, Country"
+            placeholder={t("locationPlaceholder")}
             {...register("location")}
             className={errors.location ? "border-red-500" : ""}
           />
@@ -301,22 +300,21 @@ export function FarmerProfileForm({
           )}
         </CardContent>
       </Card>
-      {/* Crop Information Section */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
             <Sprout className="w-5 h-5 text-green-600" />
-            <CardTitle>Farming Details</CardTitle>
+            <CardTitle>{t("farmingDetails")}</CardTitle>
           </div>
           <CardDescription>
-            Tell us about your agricultural activities
+            {t("farmingDetailsDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="primaryCrops" className="flex items-center gap-2">
               <Sprout className="w-4 h-4 text-muted-foreground" />
-              Primary Crops
+              {t("primaryCrops")}
             </Label>
             <Select
               value={watch("primaryCrops") || ""}
@@ -326,12 +324,12 @@ export function FarmerProfileForm({
                 id="primaryCrops"
                 className={errors.primaryCrops ? "border-red-500" : ""}
               >
-                <SelectValue placeholder="What do you grow?" />
+                <SelectValue placeholder={t("primaryCropsPlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 {CROP_OPTIONS.map((crop) => (
                   <SelectItem key={crop} value={crop}>
-                    {crop}
+                    {t(crop.toLowerCase())}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -349,7 +347,7 @@ export function FarmerProfileForm({
               className="flex items-center gap-2"
             >
               <Award className="w-4 h-4 text-muted-foreground" />
-              Farming Experience
+              {t("farmingExperience")}
             </Label>
             <Select
               value={watch("farmingExperience") || ""}
@@ -359,12 +357,12 @@ export function FarmerProfileForm({
                 id="farmingExperience"
                 className={errors.farmingExperience ? "border-red-500" : ""}
               >
-                <SelectValue placeholder="How long have you been farming?" />
+                <SelectValue placeholder={t("farmingExperiencePlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 {EXPERIENCE_LEVELS.map((level) => (
                   <SelectItem key={level} value={level}>
-                    {level}
+                    {t(level.replace(/\s|\(|\)|\+/g, "").toLowerCase())}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -377,12 +375,11 @@ export function FarmerProfileForm({
           </div>
         </CardContent>
       </Card>
-      {/* Error/Success Messages */}
       {submitError && (
         <div className="p-4 bg-red-50 border-l-4 border-red-500 rounded-lg text-red-700 flex items-start gap-3">
           <span className="text-xl">⚠️</span>
           <div>
-            <p className="font-semibold">Error</p>
+            <p className="font-semibold">{t("error")}</p>
             <p className="text-sm">{submitError}</p>
           </div>
         </div>
@@ -391,14 +388,13 @@ export function FarmerProfileForm({
         <div className="p-4 bg-green-50 border-l-4 border-green-500 rounded-lg text-green-700 flex items-start gap-3 animate-in slide-in-from-top">
           <span className="text-xl">✅</span>
           <div>
-            <p className="font-semibold">Success!</p>
+            <p className="font-semibold">{t("success")}</p>
             <p className="text-sm">
-              Your profile has been updated successfully.
+              {t("profileUpdatedSuccess")}
             </p>
           </div>
         </div>
       )}
-      {/* Submit Button */}
       <div className="flex gap-3 pt-2">
         <Button
           type="button"
@@ -406,7 +402,7 @@ export function FarmerProfileForm({
           className="flex-1"
           onClick={() => window.history.back()}
         >
-          Cancel
+          {t("cancel")}
         </Button>
         <Button
           type="submit"
@@ -416,12 +412,12 @@ export function FarmerProfileForm({
           {isSubmitting ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Saving Changes...
+              {t("savingChanges")}
             </>
           ) : (
             <>
               <span>💾</span>
-              <span className="ml-2">Save Profile</span>
+              <span className="ml-2">{t("saveProfile")}</span>
             </>
           )}
         </Button>

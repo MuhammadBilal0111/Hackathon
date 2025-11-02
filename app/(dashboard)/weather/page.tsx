@@ -5,6 +5,7 @@ import { WeatherDisplay } from "./weather-display";
 import { LocationSelector } from "./location-selector";
 import { Cloud, MapPin } from "lucide-react";
 import type { WeatherData } from "./types";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function WeatherPage() {
   const [selectedLocation, setSelectedLocation] = useState<string>("");
@@ -13,7 +14,9 @@ export default function WeatherPage() {
   const [error, setError] = useState<string | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [geminiTipsLoading, setGeminiTipsLoading] = useState(false);
-  const [language, setLanguage] = useState<"en" | "ur">("en");
+  const [language1, setLanguage] = useState<"en" | "ur">("en");
+
+  const {language} = useLanguage()
 
   const fetchGeminiTips = async (data: WeatherData, location: string) => {
     try {

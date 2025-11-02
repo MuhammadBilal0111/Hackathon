@@ -13,15 +13,12 @@ import {
   Share2,
   User,
   Loader2,
-  Pencil,
-  Trash,
 } from "lucide-react";
 import {
   getProductBySlug,
   getAllProducts,
   type Product,
 } from "@/lib/firebase-products";
-import { UpdateProductForm } from "@/components/forms/update-product-form";
 
 export default function ProductDetailPage({
   params,
@@ -29,8 +26,6 @@ export default function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   // Unwrap the params Promise using React.use()
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-
   const { slug } = use(params);
 
   const [quantity, setQuantity] = useState(1);
@@ -124,32 +119,21 @@ export default function ProductDetailPage({
           <div className="flex flex-col">
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-full flex justify-between">
-                  <div className="flex gap-1">
-                    <div className="flex items-center gap-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-4 h-4 ${
-                            i < Math.floor(product.rating)
-                              ? "fill-accent text-accent"
-                              : "text-muted-foreground"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      {product.rating} ({product.reviews} reviews)
-                    </span>
-                  </div>
+                <div className="flex items-center gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-4 h-4 ${
+                        i < Math.floor(product.rating)
+                          ? "fill-accent text-accent"
+                          : "text-muted-foreground"
+                      }`}
+                    />
+                  ))}
                 </div>
-
-                <div
-                  className="p-2 border border-gray-300 bg-white shadow-lg z-10 top-[-15] right-[-15] rounded-full cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => setIsUpdateModalOpen(true)}
-                >
-                  <Pencil className="w-8 h-8" />
-                </div>
+                <span className="text-sm text-muted-foreground">
+                  {product.rating} ({product.reviews} reviews)
+                </span>
               </div>
               <h1 className="text-4xl font-bold mb-2">{product.name}</h1>
               <div className="flex items-center gap-2 text-muted-foreground mb-4">
@@ -370,14 +354,6 @@ export default function ProductDetailPage({
           </div>
         )}
       </div>
-      {/* Update Product Modal */}
-      {product && (
-        <UpdateProductForm
-          product={product}
-          isOpen={isUpdateModalOpen}
-          onClose={() => setIsUpdateModalOpen(false)}
-        />
-      )}
     </main>
   );
 }

@@ -15,7 +15,7 @@ import {
 import { db } from "@/firebase";
 
 export interface Product {
-  id: string;
+  id?: string;
   name: string;
   vendor: string;
   vendorUid: string;

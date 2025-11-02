@@ -1,8 +1,14 @@
 "use client";
 import { CheckCircle } from "lucide-react";
 import { Activity } from "./dashboard";
-export function CompletedTasksCard({completedTasks, allTasks}: {completedTasks: Activity[], allTasks: Activity[]}) {
-  const completedPercentage = (completedTasks.length / (allTasks.length )) * 100;
+export function CompletedTasksCard({
+  completedTasks,
+  allTasks,
+}: {
+  completedTasks: Activity[];
+  allTasks: Activity[];
+}) {
+  const completedPercentage = (completedTasks.length / allTasks.length) * 100;
   const completedCount = completedTasks.length;
   const totalTasks = allTasks.length;
   return (
@@ -10,12 +16,12 @@ export function CompletedTasksCard({completedTasks, allTasks}: {completedTasks: 
       <div className="flex items-start justify-between mb-6">
         <div>
           <p className="text-xs font-semibold text-muted-foreground tracking-wider mb-2">
-            COMPLETED TASKS
+            {t("completedTasks")}
           </p>
           <h3 className="text-4xl font-bold text-green-700">
             {completedPercentage?.toFixed(2)}%
           </h3>
-          <p className="text-xs text-muted-foreground mt-1">This month</p>
+          <p className="text-xs text-muted-foreground mt-1">{t("thisMonth")}</p>
         </div>
         <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center shadow-md">
           <CheckCircle className="w-6 h-6 text-green-600" />

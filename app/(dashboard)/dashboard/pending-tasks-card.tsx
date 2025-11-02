@@ -1,17 +1,22 @@
-"use client";
-import { AlertCircle } from "lucide-react";
+'use client';
+import { AlertCircle } from 'lucide-react';
+import { useLocalization } from '@/lib/localization';
+
 export function PendingTasksCard() {
+  const { t } = useLocalization();
+
   const tasks = [
-    { name: "Prepare irrigation system", priority: "high" },
-    { name: "Apply nitrogen fertilizer", priority: "medium" },
-    { name: "Inspect crop health", priority: "high" },
+    { name: t('prepareIrrigation'), priority: 'high' },
+    { name: t('applyNitrogen'), priority: 'medium' },
+    { name: t('inspectCropHealth'), priority: 'high' },
   ];
+
   return (
     <div className="bg-card rounded-2xl p-6 shadow-sm border border-border hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-6">
         <div>
           <p className="text-xs font-semibold text-muted-foreground tracking-wider mb-2">
-            PENDING TASKS
+            {t('pendingTasks')}
           </p>
           <h3 className="text-4xl font-bold text-foreground">{tasks.length}</h3>
         </div>
@@ -27,7 +32,7 @@ export function PendingTasksCard() {
           >
             <div
               className={`w-1.5 h-1.5 rounded-full mt-2 shrink-0 ${
-                task.priority === "high" ? "bg-green-600" : "bg-green-300"
+                task.priority === 'high' ? 'bg-green-600' : 'bg-green-300'
               }`}
             />
             <div className="flex-1 min-w-0">
@@ -35,16 +40,16 @@ export function PendingTasksCard() {
                 {task.name}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5 capitalize">
-                {task.priority} priority
+                {task.priority === 'high'
+                  ? t('highPriority')
+                  : t('mediumPriority')}
               </p>
             </div>
           </div>
         ))}
       </div>
       <div className="mt-4 pt-4 border-t border-border/50">
-        <p className="text-xs text-muted-foreground">
-          Due today and upcoming days
-        </p>
+        <p className="text-xs text-muted-foreground">{t('dueToday')}</p>
       </div>
     </div>
   );

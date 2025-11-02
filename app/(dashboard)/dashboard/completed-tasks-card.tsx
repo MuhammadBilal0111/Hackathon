@@ -1,20 +1,24 @@
-"use client";
-import { CheckCircle } from "lucide-react";
+'use client';
+import { CheckCircle } from 'lucide-react';
+import { useLocalization } from '@/lib/localization';
+
 export function CompletedTasksCard() {
+  const { t } = useLocalization();
   const completedPercentage = 78;
   const completedCount = 24;
   const totalTasks = 30;
+
   return (
     <div className="bg-card rounded-2xl p-6 shadow-sm border border-border hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-6">
         <div>
           <p className="text-xs font-semibold text-muted-foreground tracking-wider mb-2">
-            COMPLETED TASKS
+            {t('completedTasks')}
           </p>
           <h3 className="text-4xl font-bold text-green-700">
             {completedPercentage}%
           </h3>
-          <p className="text-xs text-muted-foreground mt-1">This month</p>
+          <p className="text-xs text-muted-foreground mt-1">{t('thisMonth')}</p>
         </div>
         <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center shadow-md">
           <CheckCircle className="w-6 h-6 text-green-600" />

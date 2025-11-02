@@ -1,12 +1,15 @@
-"use client";
+'use client';
 
-import { PendingTasksCard } from "./pending-tasks-card";
-import { CompletedTasksCard } from "./completed-tasks-card";
-import { WeatherCard } from "./weather-card";
-import { CropsCard } from "./crops-card";
-import { UpcomingActivitiesCard } from "./upcoming-activities-card";
+import { PendingTasksCard } from './pending-tasks-card';
+import { CompletedTasksCard } from './completed-tasks-card';
+import { WeatherCard } from './weather-card';
+import { CropsCard } from './crops-card';
+import { UpcomingActivitiesCard } from './upcoming-activities-card';
+import { useLocalization } from '@/lib/localization';
 
 export function Dashboard() {
+  const { t } = useLocalization();
+
   return (
     <div className="flex min-h-screen bg-background text-foreground">
       {/* Main Content */}
@@ -15,11 +18,9 @@ export function Dashboard() {
         <div className="p-6 md:p-8">
           <div className="mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-              Welcome back, Farmer
+              {t('welcomeBack')}
             </h2>
-            <p className="text-muted-foreground">
-              Here's an overview of your farm activities
-            </p>
+            <p className="text-muted-foreground">{t('farmOverview')}</p>
           </div>
 
           <div className="space-y-6">

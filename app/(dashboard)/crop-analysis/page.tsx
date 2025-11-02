@@ -1,11 +1,13 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { CropPhotoForm } from "@/components/forms/crop-photo-form";
-import { AnalysisResults } from "@/components/analysis-result";
-import { analyzeCrop } from "@/src/services/cropService";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Card } from '@/components/ui/card';
+import { CropPhotoForm } from '@/components/forms/crop-photo-form';
+import { AnalysisResults } from '@/components/analysis-result';
+import { analyzeCrop } from '@/src/services/cropService';
+import { toast } from 'sonner';
+import { useLocalization } from '@/lib/localization';
 
 interface TreatmentStep {
   step: string;
@@ -14,16 +16,15 @@ interface TreatmentStep {
 
 interface AnalysisData {
   detectedCrop: string;
-  healthStatus: "Healthy" | "At Risk" | "Critical";
+  healthStatus: 'Healthy' | 'At Risk' | 'Critical';
   pestDisease: string;
   diseaseConfidence: number;
-  severity: "None" | "Mild" | "Moderate" | "Severe";
+  severity: 'None' | 'Mild' | 'Moderate' | 'Severe';
   affectedArea: string;
   treatmentPlan: TreatmentStep[];
   preventiveMeasures: string[];
   estimatedRecoveryTime: string;
   additionalNotes: string;
-  // Bilingual support
   detectedCrop_en?: string;
   detectedCrop_ur?: string;
   pestDisease_en?: string;
@@ -41,8 +42,8 @@ interface AnalysisData {
 }
 
 export default function AIAnalysisPage() {
+  const { t } = useLocalization();
   const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
-  console.log("ANALYSIS DATAAAAAAA", analysis);
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
@@ -51,42 +52,35 @@ export default function AIAnalysisPage() {
       setIsLoading(true);
       setShowResults(false);
 
-      // Show loading toast
       toast.loading("Analyzing your crop image...", {
-        id: "crop-analysis",
+        id: 'crop-analysis',
       });
 
-      console.log("Submitting form data:", formData);
-
-      // Create FormData for multipart/form-data upload
       const uploadData = new FormData();
-      uploadData.append("photo", formData.photo);
-      uploadData.append("cropType", formData.cropType);
+      uploadData.append('photo', formData.photo);
+      uploadData.append('cropType', formData.cropType);
       if (formData.notes) {
-        uploadData.append("notes", formData.notes);
+        uploadData.append('notes', formData.notes);
       }
 
-      // Use the API service instead of direct axios call
       const result = await analyzeCrop(uploadData);
-      console.log("RESSUSUULLLTLLLTLTLT", result);
-      // Set analysis results from API response
+
       setAnalysis({
         detectedCrop: result.detectedCrop || formData.cropType,
-        healthStatus: result.healthStatus || "Healthy",
-        pestDisease: result.pestDisease || "None",
+        healthStatus: result.healthStatus || 'Healthy',
+        pestDisease: result.pestDisease || 'None',
         diseaseConfidence: result.diseaseConfidence || 0,
-        severity: result.severity || "None",
-        affectedArea: result.affectedArea || "N/A",
+        severity: result.severity || 'None',
+        affectedArea: result.affectedArea || 'N/A',
         treatmentPlan: result.treatmentPlan || [
           {
-            step: "No Treatment Required",
-            description: "Continue regular monitoring and maintenance.",
+            step: 'No Treatment Required',
+            description: 'Continue regular monitoring and maintenance.',
           },
         ],
         preventiveMeasures: result.preventiveMeasures || [],
-        estimatedRecoveryTime: result.estimatedRecoveryTime || "N/A",
-        additionalNotes: result.additionalNotes || "",
-        // Bilingual fields
+        estimatedRecoveryTime: result.estimatedRecoveryTime || 'N/A',
+        additionalNotes: result.additionalNotes || '',
         detectedCrop_en: result.detectedCrop_en,
         detectedCrop_ur: result.detectedCrop_ur,
         pestDisease_en: result.pestDisease_en,
@@ -104,18 +98,16 @@ export default function AIAnalysisPage() {
       });
       setShowResults(true);
 
-      // Dismiss loading and show success toast
       toast.success("Analysis completed successfully!", {
-        id: "crop-analysis",
+        id: 'crop-analysis',
         description: `Your ${result.detectedCrop} crop has been analyzed.`,
         duration: 5000,
       });
     } catch (error: any) {
       console.error("Analysis failed:", error);
 
-      // Dismiss loading and show error toast
       toast.error("Analysis failed", {
-        id: "crop-analysis",
+        id: 'crop-analysis',
         description:
           error.response?.data?.error ||
           error.message ||
@@ -123,7 +115,6 @@ export default function AIAnalysisPage() {
         duration: 5000,
       });
 
-      // Don't show fallback data on error
       setShowResults(false);
     } finally {
       setIsLoading(false);
@@ -133,21 +124,20 @@ export default function AIAnalysisPage() {
   const handleSaveResult = async () => {
     try {
       setIsLoading(true);
-      toast.loading("Saving analysis result...", { id: "save-result" });
+      toast.loading("Saving analysis result...", { id: 'save-result' });
 
-      // Call save API
       console.log("Saving analysis result...");
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       toast.success("Result saved successfully!", {
-        id: "save-result",
+        id: 'save-result',
         description: "Your crop analysis has been saved to your records.",
         duration: 4000,
       });
     } catch (error) {
       console.error("Save failed:", error);
       toast.error("Failed to save result", {
-        id: "save-result",
+        id: 'save-result',
         description: "Please try again later.",
         duration: 4000,
       });
@@ -159,21 +149,20 @@ export default function AIAnalysisPage() {
   const handleAskAI = async () => {
     try {
       setIsLoading(true);
-      toast.loading("Asking AI for more details...", { id: "ask-ai" });
+      toast.loading("Asking AI for more details...", { id: 'ask-ai' });
 
-      // Call ask AI API
       console.log("Asking AI for more details...");
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       toast.success("AI response received!", {
-        id: "ask-ai",
+        id: 'ask-ai',
         description: "Additional insights have been generated.",
         duration: 4000,
       });
     } catch (error) {
       console.error("Ask AI failed:", error);
       toast.error("Failed to get AI response", {
-        id: "ask-ai",
+        id: 'ask-ai',
         description: "Please try again later.",
         duration: 4000,
       });
@@ -186,37 +175,23 @@ export default function AIAnalysisPage() {
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-foreground mb-8">
-          AI Crop Analysis
+          {t('aiCropAnalysis')}
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Form Section */}
           <div>
             <Card className="p-6 bg-card border border-border">
               <h2 className="text-xl font-bold text-foreground mb-6">
-                Upload Crop Photo
+                {t('uploadCropPhoto')}
               </h2>
               <CropPhotoForm
                 onSubmit={handleFormSubmit}
                 isLoading={isLoading}
               />
 
-              {/* Quick Action Buttons */}
-              <div className="mt-6 pt-6 border-t border-border space-y-3">
-                <p className="text-sm text-muted-foreground">Quick actions:</p>
-                <div className="flex gap-2">
-                  <button className="flex-1 px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition text-sm font-medium">
-                    Take Photo
-                  </button>
-                  <button className="flex-1 px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition text-sm font-medium">
-                    Choose from Gallery
-                  </button>
-                </div>
-              </div>
+             
             </Card>
           </div>
-
-          {/* Results Section */}
 
           <div>
             {showResults && analysis ? (
@@ -254,7 +229,7 @@ export default function AIAnalysisPage() {
             ) : (
               <Card className="p-6 bg-muted border border-border flex items-center justify-center min-h-96">
                 <p className="text-center text-muted-foreground">
-                  Upload a crop photo to see analysis results here
+                  {t('uploadToSeeResults')}
                 </p>
               </Card>
             )}

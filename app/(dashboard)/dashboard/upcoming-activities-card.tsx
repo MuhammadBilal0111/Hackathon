@@ -1,40 +1,45 @@
-"use client";
-import { Calendar, CheckCheck, AlertCircle } from "lucide-react";
+'use client';
+import { Calendar } from 'lucide-react';
+import { useLocalization } from '@/lib/localization';
+
 export function UpcomingActivitiesCard() {
+  const { t } = useLocalization();
+
   const activities = [
     {
-      task: "Harvest Wheat",
-      date: "2024-12-15",
-      status: "scheduled",
-      icon: "🚜",
+      task: t('harvestWheat'),
+      date: '2024-12-15',
+      status: 'scheduled',
+      icon: '🚜',
     },
     {
-      task: "Spray Pesticides",
-      date: "2024-12-08",
-      status: "pending",
-      icon: "💨",
+      task: t('sprayPesticides'),
+      date: '2024-12-08',
+      status: 'pending',
+      icon: '💨',
     },
     {
-      task: "Soil Testing",
-      date: "2024-12-20",
-      status: "scheduled",
-      icon: "🧪",
+      task: t('soilTesting'),
+      date: '2024-12-20',
+      status: 'scheduled',
+      icon: '🧪',
     },
   ];
+
   const getStatusColor = (status: string) => {
-    return status === "pending" ? "text-red-500" : "text-accent";
+    return status === 'pending' ? 'text-red-500' : 'text-accent';
   };
-  const getStatusBg = (status: string) => {
-    return status === "pending" ? "bg-red-500/10" : "bg-accent/10";
-  };
+
   return (
     <div className="bg-card rounded-2xl p-6 shadow-sm border border-border hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-6">
         <div>
           <p className="text-xs font-semibold text-muted-foreground tracking-wider mb-2">
-            UPCOMING ACTIVITIES
+            {t('upcomingActivities')}
           </p>
-          <h3 className="text-2xl font-bold text-foreground">Annual Plan</h3>
+          <h3 className="text-2xl font-bold text-foreground">
+            {t('annualPlan')}
+          </h3>
         </div>
         <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center">
           <Calendar className="w-6 h-6 text-accent" />
@@ -58,7 +63,9 @@ export function UpcomingActivitiesCard() {
                       activity.status
                     )}`}
                   >
-                    {activity.status === "pending" ? "URGENT" : "SCHEDULED"}
+                    {activity.status === 'pending'
+                      ? t('urgent')
+                      : t('scheduled')}
                   </span>
                 </div>
                 <div className="flex items-center gap-1">

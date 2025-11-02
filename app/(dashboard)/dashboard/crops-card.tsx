@@ -1,20 +1,25 @@
-"use client";
-import { Leaf, TrendingUp } from "lucide-react";
+'use client';
+import { Leaf, TrendingUp } from 'lucide-react';
+import { useLocalization } from '@/lib/localization';
+
 export function CropsCard() {
+  const { t } = useLocalization();
+
   const crops = [
-    { name: "Wheat", area: "12 hectares", health: 92, icon: "🌾" },
-    { name: "Rice", area: "8 hectares", health: 85, icon: "🌾" },
-    { name: "Corn", area: "10 hectares", health: 78, icon: "🌽" },
+    { name: t('wheat'), area: `12 ${t('hectares')}`, health: 92, icon: '🌾' },
+    { name: t('rice'), area: `8 ${t('hectares')}`, health: 85, icon: '🌾' },
+    { name: t('corn'), area: `10 ${t('hectares')}`, health: 78, icon: '🌽' },
   ];
+
   return (
     <div className="bg-card rounded-2xl p-6 shadow-sm border border-border hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-6">
         <div>
           <p className="text-xs font-semibold text-muted-foreground tracking-wider mb-2">
-            YOUR CROPS
+            {t('yourCrops')}
           </p>
           <h3 className="text-2xl font-bold text-foreground">
-            {crops.length} Active Crops
+            {crops.length} {t('activeCrops')}
           </h3>
         </div>
         <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center">

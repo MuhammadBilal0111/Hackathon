@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,26 +8,30 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { AlertCircle, Loader2 } from "lucide-react";
+import { useLocalization } from "@/lib/localization";
 
 // Zod validation schema
-const cropPhotoFormSchema = z.object({
-  cropType: z.string().min(1, "Please select or enter crop type"),
-  photo: z
-    .any()
-    .refine((files) => files?.length > 0, "Please select an image file")
-    .refine(
-      (files) => files?.[0]?.size <= 5 * 1024 * 1024,
-      "File size must be less than 5MB"
-    )
-    .refine((files) => {
-      const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-      return validTypes.includes(files?.[0]?.type);
-    }, "Only JPEG, PNG, and WebP images are supported")
-    .transform((files) => files[0] as File),
-  notes: z.string().optional(),
-});
+const getCropPhotoFormSchema = (t: (key: string) => string) =>
+  z.object({
+    cropType: z
+      .string()
+      .min(1, t("validationCropTypeRequired")),
+    photo: z
+      .any()
+      .refine((files) => files?.length > 0, t("validationImageRequired"))
+      .refine(
+        (files) => files?.[0]?.size <= 5 * 1024 * 1024,
+        t("validationImageSize")
+      )
+      .refine((files) => {
+        const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+        return validTypes.includes(files?.[0]?.type);
+      }, t("validationImageType"))
+      .transform((files) => files[0] as File),
+    notes: z.string().optional(),
+  });
 
-type CropPhotoFormData = z.infer<typeof cropPhotoFormSchema>;
+type CropPhotoFormData = z.infer<ReturnType<typeof getCropPhotoFormSchema>>;
 
 interface CropPhotoFormProps {
   onSubmit: (data: CropPhotoFormData) => Promise<void>;
@@ -39,8 +42,11 @@ export function CropPhotoForm({
   onSubmit,
   isLoading = false,
 }: CropPhotoFormProps) {
+  const { t } = useLocalization();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const cropPhotoFormSchema = getCropPhotoFormSchema(t);
 
   const {
     register,
@@ -54,7 +60,6 @@ export function CropPhotoForm({
 
   const photoField = watch("photo");
 
-  // Handle image preview
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -74,21 +79,20 @@ export function CropPhotoForm({
       setPreviewUrl(null);
     } catch (error) {
       setSubmitError(
-        error instanceof Error ? error.message : "Failed to analyze crop"
+        error instanceof Error ? error.message : t("failedToAnalyzeCrop")
       );
     }
   };
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-      {/* Crop Type Input */}
       <div>
         <label className="block text-sm font-medium text-foreground mb-2">
-          Crop Type
+          {t("cropType")}
         </label>
         <input
           type="text"
-          placeholder="e.g., Corn, Wheat, Rice"
+          placeholder={t("cropTypePlaceholder")}
           {...register("cropType")}
           className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
@@ -99,10 +103,9 @@ export function CropPhotoForm({
         )}
       </div>
 
-      {/* Photo Upload */}
       <div>
         <label className="block text-sm font-medium text-foreground mb-2">
-          Crop Photo
+          {t("cropPhoto")}
         </label>
         <div className="space-y-3">
           <input
@@ -120,7 +123,7 @@ export function CropPhotoForm({
             <div className="relative w-full h-48 rounded-md overflow-hidden bg-muted">
               <img
                 src={previewUrl || "/placeholder.svg"}
-                alt="Preview"
+                alt={t("imagePreview")}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -128,20 +131,18 @@ export function CropPhotoForm({
         </div>
       </div>
 
-      {/* Notes */}
       <div>
         <label className="block text-sm font-medium text-foreground mb-2">
-          Additional Notes (Optional)
+          {t("additionalNotesOptional")}
         </label>
         <textarea
-          placeholder="Any additional information about the crop..."
+          placeholder={t("additionalNotesPlaceholder")}
           {...register("notes")}
           rows={3}
           className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
         />
       </div>
 
-      {/* Error Alert */}
       {submitError && (
         <Card className="bg-destructive/10 border-destructive/30 p-3 flex gap-3">
           <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
@@ -149,7 +150,6 @@ export function CropPhotoForm({
         </Card>
       )}
 
-      {/* Submit Button */}
       <Button
         type="submit"
         disabled={isLoading}
@@ -158,10 +158,10 @@ export function CropPhotoForm({
         {isLoading ? (
           <>
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            Analyzing...
+            {t("analyzing")}
           </>
         ) : (
-          "Analyze Crop"
+          t("analyzeCrop")
         )}
       </Button>
     </form>

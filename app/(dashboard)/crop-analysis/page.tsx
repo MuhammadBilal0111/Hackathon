@@ -42,7 +42,6 @@ interface AnalysisData {
 
 export default function AIAnalysisPage() {
   const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
-  console.log("ANALYSIS DATAAAAAAA", analysis);
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
 

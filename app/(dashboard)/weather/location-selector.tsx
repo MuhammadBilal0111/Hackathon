@@ -62,7 +62,7 @@ export function LocationSelector({
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-      <div className="flex items-start gap-4 flex-col sm:flex-row">
+      <div className="flex items-baseline-last gap-4 flex-col sm:flex-row">
         {/* Location Input */}
         <div className="flex-1 w-full">
           <label
@@ -95,10 +95,10 @@ export function LocationSelector({
         </div>
 
         {/* Allow Access Button */}
-        <div className="flex flex-col gap-2 w-full sm:w-auto">
-          <label className="block text-sm font-medium text-gray-700 mb-2 invisible">
+        <div className="flex flex-col items-center w-full justify-center sm:w-auto">
+          {/* <label className="block text-sm font-medium text-gray-700 mb-2 invisible">
             Action
-          </label>
+          </label> */}
           <Button
             onClick={handleSubmit}
             disabled={!location || loading}
@@ -112,7 +112,7 @@ export function LocationSelector({
             ) : (
               <>
                 <Send className="w-4 h-4 mr-2" />
-                Allow Access
+                Get Weather
               </>
             )}
           </Button>

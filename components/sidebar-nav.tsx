@@ -4,7 +4,7 @@ import type React from "react";
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Leaf,
@@ -12,8 +12,11 @@ import {
   TrendingUp,
   CropIcon,
   Settings,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { logoutUser } from "@/lib/authService";
+import { toast } from "sonner";
 
 interface NavItem {
   name: string;
@@ -28,8 +31,18 @@ const navItems: NavItem[] = [
     icon: <LayoutDashboard className="w-5 h-5" />,
   },
   {
+    name: "Annual Farming Plan",
+    href: "/annual-plan",
+    icon: <TrendingUp className="w-5 h-5" />,
+  },
+  {
+    name: "AI Crop Analysis",
+    href: "/crop-analysis",
+    icon: <CropIcon className="w-5 h-5" />,
+  },
+  {
     name: "Crop Management",
-    href: "/crop-management",
+    href: "/crops",
     icon: <Leaf className="w-5 h-5" />,
   },
   {
@@ -38,21 +51,27 @@ const navItems: NavItem[] = [
     icon: <Cloud className="w-5 h-5" />,
   },
   {
-    name: "Market Insights",
-    href: "/market",
+    name: "Marketplace",
+    href: "/products",
     icon: <TrendingUp className="w-5 h-5" />,
-  },
-  {
-    name: "AI Crop Analysis",
-    href: "/crop-analysis",
-    icon: <CropIcon className="w-5 h-5" />,
   },
   { name: "Profile", href: "/profile", icon: <Settings className="w-5 h-5" /> },
 ];
 
 export function SidebarNav() {
   const pathname = usePathname();
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+
+  const handleLogout = async () => {
+    const { error } = await logoutUser();
+    if (error) {
+      toast.error("Failed to log out. Please try again.");
+    } else {
+      toast.success("Logged out successfully!");
+      router.push("/login");
+    }
+  };
 
   return (
     <aside
@@ -113,6 +132,17 @@ export function SidebarNav() {
               <span className="text-sm font-medium">Settings</span>
             )}
           </Link>
+
+          <button
+            onClick={handleLogout}
+            className={cn(
+              "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-sidebar-foreground hover:bg-red-50 hover:text-red-600"
+            )}
+            title={collapsed ? "Logout" : undefined}
+          >
+            <LogOut className="w-5 h-5" />
+            {!collapsed && <span className="text-sm font-medium">Logout</span>}
+          </button>
 
           <button
             onClick={() => setCollapsed(!collapsed)}

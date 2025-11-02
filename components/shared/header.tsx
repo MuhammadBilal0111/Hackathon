@@ -3,12 +3,24 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Leaf, User } from "lucide-react";
+import { Leaf, User, LogOut } from "lucide-react";
+import { logoutUser } from "@/lib/authService";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState<string>("");
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const { error } = await logoutUser();
+    if (!error) {
+      setIsLoggedIn(false);
+      setUserEmail("");
+      router.push("/");
+    }
+  };
 
   useEffect(() => {
     // Check if user is logged in by checking localStorage
@@ -48,30 +60,40 @@ export default function Header() {
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8">
-            <a
-              href="#features"
-              className="text-gray-700 hover:text-green-600 transition-colors"
+            <Link
+              href="/"
+              className="text-gray-700 hover:text-green-600 transition-colors font-medium"
             >
-              Features
-            </a>
-            <a
-              href="#how-it-works"
-              className="text-gray-700 hover:text-green-600 transition-colors"
+              Home
+            </Link>
+            <Link
+              href="/products"
+              className="text-gray-700 hover:text-green-600 transition-colors font-medium"
             >
-              How it Works
-            </a>
-            <a
-              href="#pricing"
-              className="text-gray-700 hover:text-green-600 transition-colors"
-            >
-              Pricing
-            </a>
-            <a
-              href="#contact"
-              className="text-gray-700 hover:text-green-600 transition-colors"
-            >
-              Contact
-            </a>
+              Products
+            </Link>
+            {isLoggedIn && (
+              <>
+                <Link
+                  href="/vendors/dashboard"
+                  className="text-gray-700 hover:text-green-600 transition-colors font-medium"
+                >
+                  Vendor Dashboard
+                </Link>
+                <Link
+                  href="/dashboard"
+                  className="text-gray-700 hover:text-green-600 transition-colors font-medium"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/crops"
+                  className="text-gray-700 hover:text-green-600 transition-colors font-medium"
+                >
+                  Crops
+                </Link>
+              </>
+            )}
           </nav>
 
           <div className="flex items-center space-x-4">
@@ -116,8 +138,8 @@ export default function Header() {
                 </Link>
               </>
             ) : (
-              /* Show user info when logged in */
-              <Link href="/dashboard">
+              /* Show user info and logout button when logged in */
+              <div className="flex items-center gap-3">
                 <Button
                   variant="outline"
                   className="border-green-200 text-green-700 hover:bg-green-50 flex items-center gap-2"
@@ -125,7 +147,16 @@ export default function Header() {
                   <User className="w-4 h-4" />
                   {userEmail}
                 </Button>
-              </Link>
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  className="border-red-200 text-red-600 hover:bg-red-50 flex items-center gap-2"
+                  title="Logout"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </Button>
+              </div>
             )}
           </div>
         </div>

@@ -14,6 +14,11 @@ import {
   CheckCircle,
   Smartphone,
 } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const Header = dynamic(() => import("@/components/shared/header"), {
+  ssr: false,
+});
 
 export default function Home() {
   const [selectedLanguage, setSelectedLanguage] = useState("en");
@@ -121,6 +126,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-lime-50 to-yellow-50">
+      <Header />
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="container mx-auto px-6 lg:px-8 py-20">

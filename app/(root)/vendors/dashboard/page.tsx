@@ -167,7 +167,7 @@ const getStatusColor = (status: string) => {
     case "Delivered":
       return "bg-green-100 text-green-700";
     case "Shipped":
-      return "bg-blue-100 text-blue-700";
+      return "bg-green-50 text-green-600";
     case "Processing":
       return "bg-yellow-100 text-yellow-700";
     case "Active":

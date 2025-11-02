@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,6 +22,7 @@ import { toast } from "sonner";
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -29,6 +30,9 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  // Get redirect URL from query params
+  const redirectTo = searchParams.get("from") || "/dashboard";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,7 +61,7 @@ export default function SignupPage() {
 
       if (user) {
         toast.success("Account created successfully! Welcome aboard!");
-        router.push("/dashboard");
+        router.push(redirectTo);
       }
     } catch (err) {
       toast.error("An unexpected error occurred");
@@ -79,7 +83,7 @@ export default function SignupPage() {
 
       if (user) {
         toast.success("Account created successfully! Welcome aboard!");
-        router.push("/dashboard");
+        router.push(redirectTo);
       }
     } catch (err) {
       toast.error("An unexpected error occurred");

@@ -17,13 +17,28 @@ export interface AuthUser {
 // LocalStorage key
 const USER_STORAGE_KEY = "user";
 
-// Save user to localStorage
+// Cookie helper functions
+const setCookie = (name: string, value: string, days: number = 7) => {
+  if (typeof window === "undefined") return;
+  const expires = new Date();
+  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+  document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
+};
+
+const deleteCookie = (name: string) => {
+  if (typeof window === "undefined") return;
+  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+};
+
+// Save user to localStorage and cookies
 export const saveUserToLocalStorage = (user: User) => {
   const userData: AuthUser = {
     uid: user.uid,
     email: user.email,
   };
   localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
+  // Set auth cookie for middleware
+  setCookie("auth-token", user.uid, 7);
 };
 
 // Get user from localStorage
@@ -41,6 +56,8 @@ export const getUserFromLocalStorage = (): AuthUser | null => {
 // Remove user from localStorage
 export const removeUserFromLocalStorage = () => {
   localStorage.removeItem(USER_STORAGE_KEY);
+  // Remove auth cookie
+  deleteCookie("auth-token");
 };
 
 // Sign up with email and password

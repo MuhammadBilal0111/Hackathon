@@ -116,7 +116,7 @@ export default function AccountPage() {
   const getStatusColor = (status: string) => {
     return status === "Delivered"
       ? "bg-green-100 text-green-700"
-      : "bg-blue-100 text-blue-700";
+      : "bg-green-50 text-green-600";
   };
 
   return (
@@ -131,7 +131,7 @@ export default function AccountPage() {
                 {profileData.lastName.charAt(0)}
               </div>
               <div>
-                <h1 className="text-3xl font-bold">
+                <h1 className="text-3xl font-bold text-primary">
                   {profileData.firstName} {profileData.lastName}
                 </h1>
                 <p className="text-muted-foreground">{profileData.email}</p>
@@ -169,7 +169,9 @@ export default function AccountPage() {
             <Card className="p-8">
               <div className="max-w-2xl">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold">Personal Information</h2>
+                  <h2 className="text-2xl font-bold text-primary">
+                    Personal Information
+                  </h2>
                   <Button
                     variant="outline"
                     size="sm"
@@ -309,7 +311,9 @@ export default function AccountPage() {
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-bold text-lg">{order.id}</h3>
+                          <h3 className="font-bold text-lg text-primary">
+                            {order.id}
+                          </h3>
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
                               order.status
@@ -380,7 +384,9 @@ export default function AccountPage() {
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-bold text-lg">{addr.type}</h3>
+                        <h3 className="font-bold text-lg text-primary">
+                          {addr.type}
+                        </h3>
                         {addr.default && (
                           <span className="px-3 py-1 rounded-full text-xs font-semibold bg-primary text-primary-foreground">
                             Default
@@ -499,7 +505,7 @@ export default function AccountPage() {
             <div className="space-y-6">
               {/* Notification Settings */}
               <Card className="p-6">
-                <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
+                <h3 className="font-bold text-lg mb-6 flex items-center gap-2 text-primary">
                   <Bell className="w-5 h-5" />
                   Email Notifications
                 </h3>
@@ -545,7 +551,7 @@ export default function AccountPage() {
 
               {/* Security Settings */}
               <Card className="p-6">
-                <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
+                <h3 className="font-bold text-lg mb-6 flex items-center gap-2 text-primary">
                   <Lock className="w-5 h-5" />
                   Security
                 </h3>

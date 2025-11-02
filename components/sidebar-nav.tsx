@@ -13,6 +13,7 @@ import {
   CropIcon,
   Settings,
   LogOut,
+  DollarSign,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logoutUser } from "@/lib/authService";
@@ -55,7 +56,12 @@ const navItems: NavItem[] = [
     href: "/products",
     icon: <TrendingUp className="w-5 h-5" />,
   },
-  { name: "Profile", href: "/profile", icon: <Settings className="w-5 h-5" /> },
+  {
+    name: "Expense Tracker",
+    href: "/expense-tracker",
+    icon: <DollarSign className="w-5 h-5" />,
+  },
+  // { name: "Profile", href: "/profile", icon: <Settings className="w-5 h-5" /> },
 ];
 
 export function SidebarNav() {
@@ -117,7 +123,7 @@ export function SidebarNav() {
 
         {/* Settings & Toggle */}
         <div className="border-t border-sidebar-border p-3 space-y-2">
-          <Link
+          {/* <Link
             href="/settings"
             className={cn(
               "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
@@ -131,7 +137,7 @@ export function SidebarNav() {
             {!collapsed && (
               <span className="text-sm font-medium">Settings</span>
             )}
-          </Link>
+          </Link> */}
 
           <button
             onClick={handleLogout}

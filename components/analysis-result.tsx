@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -91,6 +91,7 @@ export function AnalysisResults({
     SpeechSynthesisVoice[]
   >([]);
   const [hasUrduVoice, setHasUrduVoice] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   console.log(
     detectedCrop_en,
     detectedCrop_ur,
@@ -189,6 +190,16 @@ export function AnalysisResults({
       }
     };
   }, []);
+
+  // Cleanup audio on component unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
   const getHealthStatusIcon = (status: string) => {
     switch (status) {
       case "Healthy":
@@ -260,88 +271,210 @@ export function AnalysisResults({
   const stopSpeaking = () => {
     if (typeof window !== "undefined") {
       window.speechSynthesis.cancel();
+
+      // Stop and cleanup audio if it's playing
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current = null;
+      }
+
       setIsSpeaking(false);
     }
   };
 
   const speakInUrdu = async () => {
-    if (!speechSupported || typeof window === "undefined") {
-      alert("Text-to-speech is not supported in your browser.");
+    if (typeof window === "undefined") {
       return;
     }
 
     // Cancel any ongoing speech
-    window.speechSynthesis.cancel();
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
     setIsSpeaking(true);
 
-    // Find Urdu voice, then try Hindi voice as fallback
-    let urduVoice =
-      availableVoices.find((v) => v.lang.toLowerCase().startsWith("ur")) ||
-      null;
+    // Build comprehensive Urdu text directly from Gemini API (no translation needed!)
+    let urduText = `پہچانی گئی فصل: ${currentDetectedCrop}۔\n`;
 
-    // If no Urdu voice, try Hindi (similar pronunciation)
-    if (!urduVoice) {
-      urduVoice =
-        availableVoices.find(
-          (v) =>
-            v.lang.toLowerCase().includes("hi-in") ||
-            v.lang.toLowerCase().includes("hi_in")
-        ) || null;
+    // Health Status in Urdu
+    const healthStatusUrdu =
+      healthStatus === "Healthy"
+        ? "صحت مند"
+        : healthStatus === "At Risk"
+        ? "خطرے میں"
+        : "نازک";
+    urduText += `صحت کی حالت: ${healthStatusUrdu}۔\n`;
+
+    urduText += `شناخت شدہ کیڑا یا بیماری: ${currentPestDisease}۔\n`;
+    urduText += `${diseaseConfidence}% اعتماد۔\n`;
+
+    // Severity in Urdu
+    const severityUrdu =
+      severity === "None"
+        ? "کوئی نہیں"
+        : severity === "Mild"
+        ? "ہلکا"
+        : severity === "Moderate"
+        ? "اعتدال پسند"
+        : "شدید";
+    urduText += `شدت کی سطح: ${severityUrdu}۔\n`;
+
+    urduText += `متاثرہ علاقہ: ${currentAffectedArea}۔\n`;
+    urduText += `متوقع بحالی کا وقت: ${currentEstimatedRecoveryTime}۔\n`;
+
+    // Add Treatment Plan in Urdu
+    if (currentTreatmentPlan && currentTreatmentPlan.length > 0) {
+      urduText += `\nتجویز کردہ علاج کا منصوبہ:\n`;
+      currentTreatmentPlan.forEach((treatment, index) => {
+        urduText += `${treatment.step}: ${treatment.description}۔\n`;
+      });
     }
 
-    // Only show alert on first click if no voice found
-    if (!urduVoice && !sessionStorage.getItem("urdu-voice-warning-shown")) {
-      sessionStorage.setItem("urdu-voice-warning-shown", "true");
-      console.log(
-        "💡 Tip: For authentic Urdu accent, install Urdu language pack from system settings. Currently using Roman Urdu pronunciation."
-      );
+    // Add Preventive Measures in Urdu
+    if (currentPreventiveMeasures && currentPreventiveMeasures.length > 0) {
+      urduText += `\nاحتیاطی تدابیر:\n`;
+      currentPreventiveMeasures.forEach((measure, index) => {
+        urduText += `${index + 1}. ${measure}۔\n`;
+      });
     }
 
-    // All four labels to speak in Urdu - Build complete text
-    // Use proper Urdu script when Urdu voice is available, otherwise use Roman Urdu
-    let fullText: string;
+    // Add Additional Notes in Urdu
+    if (currentAdditionalNotes && currentAdditionalNotes.trim()) {
+      urduText += `\nاضافی نوٹس: ${currentAdditionalNotes}۔\n`;
+    }
 
-    if (urduVoice) {
-      // Authentic Urdu with Urdu script
-      const healthStatusValue = urduTranslations[healthStatus];
-      const pestValue =
-        pestDisease === "None" ? urduTranslations["None"] : pestDisease;
+    console.log("=== Urdu Text from Gemini (No Translation) ===");
+    console.log(urduText);
+    console.log("===========================================");
 
-      fullText = `
+    try {
+      // Call text-to-speech API with Urdu text directly (skip translation)
+      const response = await fetch("/api/text-to-speech", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: urduText,
+          targetLanguage: "ur-PK",
+          skipTranslation: true, // Use Urdu text directly, no translation needed!
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.audio && data.success) {
+        console.log("✅ Audio received, playing...");
+
+        // Play the audio
+        const audio = new Audio(`data:audio/mpeg;base64,${data.audio}`);
+        audioRef.current = audio; // Store reference for stopping
+
+        audio.onended = () => {
+          console.log("Audio playback completed");
+          setIsSpeaking(false);
+          audioRef.current = null;
+        };
+
+        audio.onerror = (error) => {
+          console.error("Audio playback error:", error);
+          audioRef.current = null;
+          // Fallback to browser TTS
+          useBrowserUrduTTS();
+        };
+
+        await audio.play();
+      } else {
+        // Fallback to browser TTS if API fails
+        console.log(
+          "⚠️ Text-to-speech API not available, using browser TTS fallback"
+        );
+        useBrowserUrduTTS();
+      }
+    } catch (error) {
+      console.error("Error during text-to-speech:", error);
+      // Fallback to browser TTS
+      useBrowserUrduTTS();
+    }
+
+    // Browser TTS fallback function
+    async function useBrowserUrduTTS() {
+      if (!speechSupported) {
+        alert("Text-to-speech is not supported in your browser.");
+        setIsSpeaking(false);
+        return;
+      }
+
+      try {
+        // Find Urdu voice, then try Hindi voice as fallback
+        let urduVoice =
+          availableVoices.find((v) => v.lang.toLowerCase().startsWith("ur")) ||
+          null;
+
+        // If no Urdu voice, try Hindi (similar pronunciation)
+        if (!urduVoice) {
+          urduVoice =
+            availableVoices.find(
+              (v) =>
+                v.lang.toLowerCase().includes("hi-in") ||
+                v.lang.toLowerCase().includes("hi_in")
+            ) || null;
+        }
+
+        // Only show alert on first click if no voice found
+        if (!urduVoice && !sessionStorage.getItem("urdu-voice-warning-shown")) {
+          sessionStorage.setItem("urdu-voice-warning-shown", "true");
+          console.log(
+            "💡 Tip: For authentic Urdu accent, install Urdu language pack from system settings. Currently using Roman Urdu pronunciation."
+          );
+        }
+
+        // Use proper Urdu script when Urdu voice is available, otherwise use Roman Urdu
+        let fullText: string;
+
+        if (urduVoice) {
+          // Authentic Urdu with Urdu script
+          const healthStatusValue = urduTranslations[healthStatus];
+          const pestValue =
+            pestDisease === "None" ? urduTranslations["None"] : pestDisease;
+
+          fullText = `
 ${urduTranslations["Detected Crop"]}: ${detectedCrop}۔
 ${urduTranslations["Health Status"]}: ${healthStatusValue}۔
 ${urduTranslations["Identified Pest/Disease"]}: ${pestValue}۔
 ${urduTranslations["Recommended Treatment Plan"]}: ${treatmentPlan}۔
 `.trim();
-    } else {
-      // Roman Urdu fallback for English-speaking voices
-      const healthStatusValue = romanUrduTranslations[healthStatus];
-      const pestValue =
-        pestDisease === "None" ? romanUrduTranslations["None"] : pestDisease;
+        } else {
+          // Roman Urdu fallback for English-speaking voices
+          const healthStatusValue = romanUrduTranslations[healthStatus];
+          const pestValue =
+            pestDisease === "None"
+              ? romanUrduTranslations["None"]
+              : pestDisease;
 
-      fullText = `
+          fullText = `
 ${romanUrduTranslations["Detected Crop"]}: ${detectedCrop}.
 ${romanUrduTranslations["Health Status"]}: ${healthStatusValue}.
 ${romanUrduTranslations["Identified Pest/Disease"]}: ${pestValue}.
 ${romanUrduTranslations["Recommended Treatment Plan"]}: ${treatmentPlan}.
 `.trim();
-    }
+        }
 
-    console.log("Speaking Urdu text:", fullText);
+        console.log("Speaking Urdu text (browser fallback):", fullText);
 
-    try {
-      // Speak all text at once - no delays
-      await speakSingleUtterance(
-        fullText,
-        urduVoice,
-        urduVoice ? urduVoice.lang : "ur-PK",
-        undefined
-      );
+        await speakSingleUtterance(
+          fullText,
+          urduVoice,
+          urduVoice ? urduVoice.lang : "ur-PK",
+          undefined
+        );
 
-      setIsSpeaking(false);
-    } catch (error) {
-      console.error("Error during Urdu speech:", error);
-      setIsSpeaking(false);
+        setIsSpeaking(false);
+      } catch (err) {
+        console.error("Browser TTS error:", err);
+        setIsSpeaking(false);
+      }
     }
   };
 
@@ -361,13 +494,35 @@ ${romanUrduTranslations["Recommended Treatment Plan"]}: ${treatmentPlan}.
       availableVoices.find((v) => v.lang.startsWith("en")) ||
       null;
 
-    // Build complete English text - all 4 fields with proper formatting
-    const fullText = `
-Detected Crop: ${detectedCrop}.
-Health Status: ${healthStatus}.
-Identified Pest or Disease: ${pestDisease}.
-Recommended Treatment Plan: ${treatmentPlan}.
-`.trim();
+    // Build comprehensive English text with all analysis details
+    let fullText = `Detected Crop: ${currentDetectedCrop}.\n`;
+    fullText += `Health Status: ${healthStatus}.\n`;
+    fullText += `Identified Pest or Disease: ${currentPestDisease}.\n`;
+    fullText += `${diseaseConfidence}% confidence.\n`;
+    fullText += `Severity Level: ${severity}.\n`;
+    fullText += `Affected Area: ${currentAffectedArea}.\n`;
+    fullText += `Estimated Recovery Time: ${currentEstimatedRecoveryTime}.\n`;
+
+    // Add Treatment Plan
+    if (currentTreatmentPlan && currentTreatmentPlan.length > 0) {
+      fullText += `Recommended Treatment Plan:\n`;
+      currentTreatmentPlan.forEach((treatment, index) => {
+        fullText += `${treatment.step}: ${treatment.description}.\n`;
+      });
+    }
+
+    // Add Preventive Measures
+    if (currentPreventiveMeasures && currentPreventiveMeasures.length > 0) {
+      fullText += `Preventive Measures:\n`;
+      currentPreventiveMeasures.forEach((measure, index) => {
+        fullText += `${index + 1}. ${measure}.\n`;
+      });
+    }
+
+    // Add Additional Notes
+    if (currentAdditionalNotes && currentAdditionalNotes.trim()) {
+      fullText += `Additional Notes: ${currentAdditionalNotes}.\n`;
+    }
 
     console.log("Speaking English text:", fullText);
 

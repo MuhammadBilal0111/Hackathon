@@ -26,7 +26,17 @@ import { PlanDisplay } from "./components/plan-display";
 import { ConfirmDialog } from "./components/confirm-dialog";
 
 // Hardcoded user ID (can be easily replaced with Firebase Auth UID later)
-const DEMO_USER_ID = "demo-user-123";
+let USER_ID: string | undefined;
+if (typeof window !== "undefined") {
+  try {
+    const userStr = localStorage.getItem("user");
+    const parsedUser = userStr ? JSON.parse(userStr) : null;
+    USER_ID = parsedUser?.uid;
+  } catch (e) {
+    console.warn("Failed to parse stored user:", e);
+    USER_ID = undefined;
+  }
+}
 
 interface Activity {
   title: string;
@@ -83,7 +93,7 @@ export default function AnnualPlanPage() {
   const fetchPlan = useCallback(async () => {
     try {
       setIsLoading(true);
-      const planRef = doc(db, "annual_plans", DEMO_USER_ID);
+      const planRef = doc(db, "annual_plans", USER_ID);
       const planSnap = await getDoc(planRef);
 
       if (planSnap.exists()) {
@@ -110,7 +120,7 @@ export default function AnnualPlanPage() {
   // Save plan to Firestore
   const savePlanToFirestore = async (data: AnnualPlanData) => {
     try {
-      const planRef = doc(db, "annual_plans", DEMO_USER_ID);
+      const planRef = doc(db, "annual_plans", USER_ID);
       await setDoc(planRef, data);
       toast.success("Annual plan saved successfully");
       return true;

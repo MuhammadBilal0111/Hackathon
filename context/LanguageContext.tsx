@@ -20,11 +20,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
   undefined
 );
 
-export function LanguageProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<Language>("en");
   const [translations, setTranslations] = useState<any>({});
 
@@ -68,6 +64,14 @@ export function useLocalization() {
   const context = useContext(LanguageContext);
   if (context === undefined) {
     throw new Error("useLocalization must be used within a LanguageProvider");
+  }
+  return context;
+}
+
+export function useLanguage() {
+  const context = useContext(LanguageContext);
+  if (context === undefined) {
+    throw new Error("useLanguage must be used within a LanguageProvider");
   }
   return context;
 }

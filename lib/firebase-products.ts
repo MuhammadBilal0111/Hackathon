@@ -18,6 +18,7 @@ export interface Product {
   id: string;
   name: string;
   vendor: string;
+  vendorUid: string;
   price: number;
   description: string;
   category: string;
@@ -34,6 +35,7 @@ export interface Product {
 export interface CreateProductData {
   name: string;
   vendor: string;
+  vendorUid: string;
   price: number;
   description: string;
   category: string;
@@ -123,6 +125,68 @@ export const getProductsByVendor = async (
   }
 };
 
+// Get products by vendor UID
+export const getProductsByVendorUid = async (
+  vendorUid: string
+): Promise<Product[]> => {
+  try {
+    console.log("🔍 Firebase query - searching for vendorUid:", vendorUid);
+
+    const q = query(
+      collection(db, "products"),
+      where("vendorUid", "==", vendorUid)
+    );
+
+    console.log("📤 Executing Firebase query...");
+    const querySnapshot = await getDocs(q);
+
+    console.log("📥 Query completed. Document count:", querySnapshot.size);
+
+    const products: Product[] = [];
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      console.log("📄 Document found:", {
+        id: doc.id,
+        name: data.name,
+        vendorUid: data.vendorUid,
+        hasVendorUid: !!data.vendorUid,
+      });
+
+      products.push({
+        id: doc.id,
+        ...data,
+      } as Product);
+    });
+
+    // Sort by createdAt in descending order (newest first) in JavaScript
+    products.sort((a, b) => {
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return bTime - aTime;
+    });
+
+    console.log(`✅ Returning ${products.length} products`);
+    return products;
+  } catch (error: any) {
+    console.error("❌ Error getting vendor products by UID:", error);
+    console.error("Error code:", error.code);
+    console.error("Error message:", error.message);
+
+    // If it's an index error, provide helpful message
+    if (
+      error.code === "failed-precondition" ||
+      error.message?.includes("index")
+    ) {
+      console.error(
+        "🔧 You may need to create a Firestore index. Check the Firebase console for the index creation link."
+      );
+    }
+
+    throw new Error("Failed to fetch vendor products by UID: " + error.message);
+  }
+};
+
 // Get product by ID
 export const getProductById = async (
   productId: string
@@ -178,7 +242,7 @@ export const getProductBySlug = async (
 export const updateProduct = async (
   productId: string,
   updates: Partial<CreateProductData>
-): Promise<void>  => {
+): Promise<void> => {
   try {
     const productRef = doc(db, "products", productId);
     const now = new Date().toISOString();
@@ -194,11 +258,7 @@ export const updateProduct = async (
     }
 
     await updateDoc(productRef, updateData);
-    const updatedSnap = await getDoc(productRef);
     console.log("Product updated successfully");
-    if (updatedSnap.exists()) {
-      return updatedSnap.data();
-    }
   } catch (error) {
     console.error("Error updating product:", error);
     throw new Error("Failed to update product");

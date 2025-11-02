@@ -85,7 +85,9 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center p-4 bg-gray-50">
         <div className="w-full max-w-md space-y-3">
           <div className="text-center space-y-2">
-            <h2 className="text-3xl font-bold text-primary">{t("login_welcome_back")}</h2>
+            <h2 className="text-3xl font-bold text-primary">
+              {t("login_welcome_back")}
+            </h2>
             <p className="text-gray-600">{t("login_please_signin")}</p>
           </div>
 
@@ -151,7 +153,9 @@ export default function LoginPage() {
                       type="checkbox"
                       className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                     />
-                    <span className="text-gray-600">{t("login_remember_me")}</span>
+                    <span className="text-gray-600">
+                      {t("login_remember_me")}
+                    </span>
                   </label>
                   <a
                     href="#"

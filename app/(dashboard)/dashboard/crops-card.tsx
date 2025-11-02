@@ -5,7 +5,7 @@ import { getAllCrops, type Crop } from "@/lib/firebase-crops";
 import { toast } from "sonner";
 import { useLocalization } from "@/lib/localization";
 
-export function CropsCard({user}: {user?: string}) {
+export function CropsCard({ user }: { user?: string }) {
   const { t } = useLocalization();
   const [crops, setCrops] = useState<Crop[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -24,10 +24,11 @@ export function CropsCard({user}: {user?: string}) {
       }
 
       const fetchedCrops = await getAllCrops({ farmerId: userId });
-      console.log(fetchedCrops)
+      console.log(fetchedCrops);
       setCrops(fetchedCrops);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to fetch crops";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch crops";
       setError(errorMessage);
       toast.error(errorMessage);
       console.error("Crops fetch error:", err);
@@ -43,11 +44,16 @@ export function CropsCard({user}: {user?: string}) {
   // Helper function to get health percentage based on condition
   const getHealthPercentage = (condition: string) => {
     switch (condition.toLowerCase()) {
-      case "excellent": return 95;
-      case "good": return 80;
-      case "fair": return 65;
-      case "poor": return 40;
-      default: return 75;
+      case "excellent":
+        return 95;
+      case "good":
+        return 80;
+      case "fair":
+        return 65;
+      case "poor":
+        return 40;
+      default:
+        return 75;
     }
   };
   if (isLoading) {
@@ -70,7 +76,7 @@ export function CropsCard({user}: {user?: string}) {
           <div className="text-center">
             <Leaf className="w-8 h-8 text-red-500 mx-auto mb-2" />
             <p className="text-sm text-red-600 mb-2">{error}</p>
-            <button 
+            <button
               onClick={fetchCrops}
               className="text-xs text-accent hover:text-accent/80 underline"
             >
@@ -102,7 +108,9 @@ export function CropsCard({user}: {user?: string}) {
           <div className="text-center py-8">
             <Leaf className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">{t("noCropsFound")}</p>
-            <p className="text-xs text-muted-foreground mt-1">{t("addFirstCrop")}</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {t("addFirstCrop")}
+            </p>
           </div>
         ) : (
           crops.map((crop) => (
@@ -114,18 +122,27 @@ export function CropsCard({user}: {user?: string}) {
                 <div className="flex items-center gap-3">
                   <div className="text-3xl">🌾</div>
                   <div>
-                    <p className="font-semibold text-foreground">{crop.cropName}</p>
-                    <p className="text-xs text-muted-foreground">{crop.category}</p>
+                    <p className="font-semibold text-foreground">
+                      {crop.cropName}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {crop.category}
+                    </p>
                   </div>
                 </div>
               </div>
               <div className="mt-2 flex justify-between items-center">
-                <span className={`text-xs px-2 py-1 rounded-full ${
-                  crop.condition === 'excellent' ? 'bg-green-100 text-green-800' :
-                  crop.condition === 'good' ? 'bg-blue-100 text-blue-800' :
-                  crop.condition === 'fair' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-red-100 text-red-800'
-                }`}>
+                <span
+                  className={`text-xs px-2 py-1 rounded-full ${
+                    crop.condition === "excellent"
+                      ? "bg-green-100 text-green-800"
+                      : crop.condition === "good"
+                      ? "bg-blue-100 text-blue-800"
+                      : crop.condition === "fair"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                >
                   {t(crop.condition as any)}
                 </span>
                 <span className="text-xs text-muted-foreground">

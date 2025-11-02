@@ -102,9 +102,7 @@ export default function SignupPage() {
             <h2 className="text-3xl font-bold text-primary">
               {t("signup_create_account")}
             </h2>
-            <p className="text-gray-600">
-              {t("signup_get_started")}
-            </p>
+            <p className="text-gray-600">{t("signup_get_started")}</p>
           </div>
 
           <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">

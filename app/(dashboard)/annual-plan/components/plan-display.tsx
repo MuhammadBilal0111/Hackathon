@@ -153,19 +153,25 @@ export function PlanDisplay({
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">{t("planDisplay_farmSize")}</p>
+              <p className="text-sm text-muted-foreground">
+                {t("planDisplay_farmSize")}
+              </p>
               <p className="font-semibold text-lg">
                 {planData.farmInfo.farmSize}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">{t("planDisplay_soilType")}</p>
+              <p className="text-sm text-muted-foreground">
+                {t("planDisplay_soilType")}
+              </p>
               <p className="font-semibold text-lg">
                 {planData.farmInfo.soilType}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">{t("planDisplay_primaryCrops")}</p>
+              <p className="text-sm text-muted-foreground">
+                {t("planDisplay_primaryCrops")}
+              </p>
               <div className="flex flex-wrap gap-1 mt-1">
                 {planData.farmInfo.primaryCrops.map((crop, idx) => (
                   <span
@@ -179,7 +185,8 @@ export function PlanDisplay({
             </div>
           </div>
           <p className="text-xs text-muted-foreground mt-4">
-            {t("planDisplay_generatedOn")}: {new Date(planData.generatedAt).toLocaleDateString()}
+            {t("planDisplay_generatedOn")}:{" "}
+            {new Date(planData.generatedAt).toLocaleDateString()}
           </p>
         </CardContent>
       </Card>

@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { CropPhotoForm } from '@/components/forms/crop-photo-form';
-import { AnalysisResults } from '@/components/analysis-result';
-import { analyzeCrop } from '@/src/services/cropService';
-import { toast } from 'sonner';
-import { useLocalization } from '@/lib/localization';
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { CropPhotoForm } from "@/components/forms/crop-photo-form";
+import { AnalysisResults } from "@/components/analysis-result";
+import { analyzeCrop } from "@/src/services/cropService";
+import { toast } from "sonner";
+import { useLocalization } from "@/lib/localization";
 
 interface TreatmentStep {
   step: string;
@@ -15,10 +15,10 @@ interface TreatmentStep {
 
 interface AnalysisData {
   detectedCrop: string;
-  healthStatus: 'Healthy' | 'At Risk' | 'Critical';
+  healthStatus: "Healthy" | "At Risk" | "Critical";
   pestDisease: string;
   diseaseConfidence: number;
-  severity: 'None' | 'Mild' | 'Moderate' | 'Severe';
+  severity: "None" | "Mild" | "Moderate" | "Severe";
   affectedArea: string;
   treatmentPlan: TreatmentStep[];
   preventiveMeasures: string[];
@@ -52,34 +52,34 @@ export default function AIAnalysisPage() {
       setShowResults(false);
 
       toast.loading("Analyzing your crop image...", {
-        id: 'crop-analysis',
+        id: "crop-analysis",
       });
 
       const uploadData = new FormData();
-      uploadData.append('photo', formData.photo);
-      uploadData.append('cropType', formData.cropType);
+      uploadData.append("photo", formData.photo);
+      uploadData.append("cropType", formData.cropType);
       if (formData.notes) {
-        uploadData.append('notes', formData.notes);
+        uploadData.append("notes", formData.notes);
       }
 
       const result = await analyzeCrop(uploadData);
 
       setAnalysis({
         detectedCrop: result.detectedCrop || formData.cropType,
-        healthStatus: result.healthStatus || 'Healthy',
-        pestDisease: result.pestDisease || 'None',
+        healthStatus: result.healthStatus || "Healthy",
+        pestDisease: result.pestDisease || "None",
         diseaseConfidence: result.diseaseConfidence || 0,
-        severity: result.severity || 'None',
-        affectedArea: result.affectedArea || 'N/A',
+        severity: result.severity || "None",
+        affectedArea: result.affectedArea || "N/A",
         treatmentPlan: result.treatmentPlan || [
           {
-            step: 'No Treatment Required',
-            description: 'Continue regular monitoring and maintenance.',
+            step: "No Treatment Required",
+            description: "Continue regular monitoring and maintenance.",
           },
         ],
         preventiveMeasures: result.preventiveMeasures || [],
-        estimatedRecoveryTime: result.estimatedRecoveryTime || 'N/A',
-        additionalNotes: result.additionalNotes || '',
+        estimatedRecoveryTime: result.estimatedRecoveryTime || "N/A",
+        additionalNotes: result.additionalNotes || "",
         detectedCrop_en: result.detectedCrop_en,
         detectedCrop_ur: result.detectedCrop_ur,
         pestDisease_en: result.pestDisease_en,
@@ -98,7 +98,7 @@ export default function AIAnalysisPage() {
       setShowResults(true);
 
       toast.success("Analysis completed successfully!", {
-        id: 'crop-analysis',
+        id: "crop-analysis",
         description: `Your ${result.detectedCrop} crop has been analyzed.`,
         duration: 5000,
       });
@@ -106,7 +106,7 @@ export default function AIAnalysisPage() {
       console.error("Analysis failed:", error);
 
       toast.error("Analysis failed", {
-        id: 'crop-analysis',
+        id: "crop-analysis",
         description:
           error.response?.data?.error ||
           error.message ||
@@ -123,20 +123,20 @@ export default function AIAnalysisPage() {
   const handleSaveResult = async () => {
     try {
       setIsLoading(true);
-      toast.loading("Saving analysis result...", { id: 'save-result' });
+      toast.loading("Saving analysis result...", { id: "save-result" });
 
       console.log("Saving analysis result...");
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       toast.success("Result saved successfully!", {
-        id: 'save-result',
+        id: "save-result",
         description: "Your crop analysis has been saved to your records.",
         duration: 4000,
       });
     } catch (error) {
       console.error("Save failed:", error);
       toast.error("Failed to save result", {
-        id: 'save-result',
+        id: "save-result",
         description: "Please try again later.",
         duration: 4000,
       });
@@ -148,20 +148,20 @@ export default function AIAnalysisPage() {
   const handleAskAI = async () => {
     try {
       setIsLoading(true);
-      toast.loading("Asking AI for more details...", { id: 'ask-ai' });
+      toast.loading("Asking AI for more details...", { id: "ask-ai" });
 
       console.log("Asking AI for more details...");
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       toast.success("AI response received!", {
-        id: 'ask-ai',
+        id: "ask-ai",
         description: "Additional insights have been generated.",
         duration: 4000,
       });
     } catch (error) {
       console.error("Ask AI failed:", error);
       toast.error("Failed to get AI response", {
-        id: 'ask-ai',
+        id: "ask-ai",
         description: "Please try again later.",
         duration: 4000,
       });
@@ -174,21 +174,19 @@ export default function AIAnalysisPage() {
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-foreground mb-8">
-          {t('aiCropAnalysis')}
+          {t("aiCropAnalysis")}
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div>
             <Card className="p-6 bg-card border border-border">
               <h2 className="text-xl font-bold text-foreground mb-6">
-                {t('uploadCropPhoto')}
+                {t("uploadCropPhoto")}
               </h2>
               <CropPhotoForm
                 onSubmit={handleFormSubmit}
                 isLoading={isLoading}
               />
-
-             
             </Card>
           </div>
 
@@ -228,7 +226,7 @@ export default function AIAnalysisPage() {
             ) : (
               <Card className="p-6 bg-muted border border-border flex items-center justify-center min-h-96">
                 <p className="text-center text-muted-foreground">
-                  {t('uploadToSeeResults')}
+                  {t("uploadToSeeResults")}
                 </p>
               </Card>
             )}

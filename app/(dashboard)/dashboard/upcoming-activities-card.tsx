@@ -138,9 +138,7 @@ export function UpcomingActivitiesCard({
               {t("noActivitiesPlanned")}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              {!planData
-                ? t("loadingAnnualPlan")
-                : t("allActivitiesCompleted")}
+              {!planData ? t("loadingAnnualPlan") : t("allActivitiesCompleted")}
             </p>
           </div>
         ) : (
@@ -163,7 +161,9 @@ export function UpcomingActivitiesCard({
                         activity.status
                       )}`}
                     >
-                      {activity.status === "pending" ? t("urgent") : t("scheduled")}
+                      {activity.status === "pending"
+                        ? t("urgent")
+                        : t("scheduled")}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground mb-2">

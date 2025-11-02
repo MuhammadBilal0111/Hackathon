@@ -128,7 +128,9 @@ export function SidebarNav() {
             >
               {item.icon}
               {!collapsed && (
-                <span className="text-sm font-medium">{t(item.translationKey as any)}</span>
+                <span className="text-sm font-medium">
+                  {t(item.translationKey as any)}
+                </span>
               )}
             </Link>
           ))}
@@ -137,10 +139,7 @@ export function SidebarNav() {
         {/* Settings & Toggle */}
         <div className="border-t border-sidebar-border p-3 space-y-2">
           {/* Language Switcher */}
-          <div className={cn(
-            "px-2 py-2",
-            collapsed && "flex justify-center"
-          )}>
+          <div className={cn("px-2 py-2", collapsed && "flex justify-center")}>
             {!collapsed && (
               <div className="flex items-center gap-2 mb-2 px-2">
                 <Languages className="w-4 h-4 text-sidebar-foreground/70" />
@@ -149,10 +148,12 @@ export function SidebarNav() {
                 </span>
               </div>
             )}
-            <div className={cn(
-              "flex bg-gray-100 rounded-lg p-1",
-              collapsed ? "flex-col gap-1" : "gap-1"
-            )}>
+            <div
+              className={cn(
+                "flex bg-gray-100 rounded-lg p-1",
+                collapsed ? "flex-col gap-1" : "gap-1"
+              )}
+            >
               <button
                 onClick={() => changeLanguage("en")}
                 className={cn(
@@ -204,7 +205,9 @@ export function SidebarNav() {
             title={collapsed ? t("logout") : undefined}
           >
             <LogOut className="w-5 h-5" />
-            {!collapsed && <span className="text-sm font-medium">{t("logout")}</span>}
+            {!collapsed && (
+              <span className="text-sm font-medium">{t("logout")}</span>
+            )}
           </button>
 
           <button

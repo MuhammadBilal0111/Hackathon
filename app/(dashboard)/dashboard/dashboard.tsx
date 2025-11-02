@@ -65,7 +65,7 @@ export function Dashboard() {
   const { t } = useLocalization();
   const [planData, setPlanData] = useState<AnnualPlanData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [pendingTasks, setPendingTasks] = useState<Activity[]>([]); 
+  const [pendingTasks, setPendingTasks] = useState<Activity[]>([]);
   const [completedTasks, setCompletedTasks] = useState<Activity[]>([]);
 
   const fetchPlan = useCallback(async () => {
@@ -77,12 +77,12 @@ export function Dashboard() {
       if (planSnap.exists()) {
         const data = planSnap.data() as AnnualPlanData;
         setPlanData(data);
-        console.log(data)
-        
+        console.log(data);
+
         // Clear arrays first to prevent duplication
         const newPendingTasks: Activity[] = [];
         const newCompletedTasks: Activity[] = [];
-        
+
         data?.annualPlan.forEach((monthActivity) => {
           monthActivity.activities.forEach((activity) => {
             if (activity.status == "pending") {
@@ -92,7 +92,7 @@ export function Dashboard() {
             }
           });
         });
-        
+
         // Set the arrays once with all collected tasks
         setPendingTasks(newPendingTasks);
         setCompletedTasks(newCompletedTasks);
@@ -108,9 +108,9 @@ export function Dashboard() {
     }
   }, [t]);
 
-    useEffect(() => {
-      fetchPlan();
-    }, [fetchPlan]);
+  useEffect(() => {
+    fetchPlan();
+  }, [fetchPlan]);
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
@@ -122,16 +122,17 @@ export function Dashboard() {
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
               {t("welcomeBack")}
             </h2>
-            <p className="text-muted-foreground">
-              {t("farmOverview")}
-            </p>
+            <p className="text-muted-foreground">{t("farmOverview")}</p>
           </div>
 
           <div className="space-y-6">
             {/* Row 1: Pending & Completed Tasks */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <PendingTasksCard pendingTasks={pendingTasks} />
-              <CompletedTasksCard completedTasks={completedTasks} allTasks={pendingTasks.concat(completedTasks)} />
+              <CompletedTasksCard
+                completedTasks={completedTasks}
+                allTasks={pendingTasks.concat(completedTasks)}
+              />
             </div>
 
             {/* Row 2: Weather */}

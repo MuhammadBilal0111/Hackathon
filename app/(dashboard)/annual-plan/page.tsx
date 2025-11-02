@@ -173,12 +173,9 @@ export default function AnnualPlanPage() {
       }
     } catch (error: any) {
       console.error("Error generating plan:", error);
-      toast.error(
-        error.message || t("failedToGeneratePlan"),
-        {
-          id: "generating",
-        }
-      );
+      toast.error(error.message || t("failedToGeneratePlan"), {
+        id: "generating",
+      });
     } finally {
       setIsGenerating(false);
     }

@@ -157,9 +157,7 @@ export function PlanFormModal({
               ? t("planForm_regenerate_title")
               : t("planForm_generate_title")}
           </DialogTitle>
-          <DialogDescription>
-            {t("planForm_description")}
-          </DialogDescription>
+          <DialogDescription>{t("planForm_description")}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 mt-4">
@@ -279,14 +277,18 @@ export function PlanFormModal({
 
           {/* Farming Type */}
           <div className="space-y-2">
-            <Label htmlFor="farmingType">{t("planForm_farmingType_label")}</Label>
+            <Label htmlFor="farmingType">
+              {t("planForm_farmingType_label")}
+            </Label>
             <Select
               value={formData.farmingType}
               onValueChange={(value) => handleInputChange("farmingType", value)}
               disabled={isGenerating}
             >
               <SelectTrigger>
-                <SelectValue placeholder={t("planForm_farmingType_placeholder")} />
+                <SelectValue
+                  placeholder={t("planForm_farmingType_placeholder")}
+                />
               </SelectTrigger>
               <SelectContent>
                 {FARMING_TYPES.map((type) => (
@@ -300,7 +302,9 @@ export function PlanFormModal({
 
           {/* Experience Level */}
           <div className="space-y-2">
-            <Label htmlFor="experienceLevel">{t("planForm_experience_label")}</Label>
+            <Label htmlFor="experienceLevel">
+              {t("planForm_experience_label")}
+            </Label>
             <Select
               value={formData.experienceLevel}
               onValueChange={(value) =>
@@ -309,7 +313,9 @@ export function PlanFormModal({
               disabled={isGenerating}
             >
               <SelectTrigger>
-                <SelectValue placeholder={t("planForm_experience_placeholder")} />
+                <SelectValue
+                  placeholder={t("planForm_experience_placeholder")}
+                />
               </SelectTrigger>
               <SelectContent>
                 {EXPERIENCE_LEVELS.map((level) => (
@@ -323,7 +329,9 @@ export function PlanFormModal({
 
           {/* Available Resources */}
           <div className="space-y-2">
-            <Label htmlFor="availableResources">{t("planForm_resources_label")}</Label>
+            <Label htmlFor="availableResources">
+              {t("planForm_resources_label")}
+            </Label>
             <Input
               id="availableResources"
               placeholder={t("planForm_resources_placeholder")}

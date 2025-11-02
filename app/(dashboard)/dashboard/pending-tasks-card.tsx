@@ -9,7 +9,7 @@ export function PendingTasksCard({
   pendingTasks: Activity[];
 }) {
   const { t } = useLocalization();
-  
+
   return (
     <div className="bg-card rounded-2xl p-6  shadow-sm border border-border hover:shadow-md transition-shadow">
       {pendingTasks.length == 0 ? (
@@ -52,9 +52,7 @@ export function PendingTasksCard({
             ))}
           </div>
           <div className="mt-4 pt-4 border-t border-border/50">
-            <p className="text-xs text-muted-foreground">
-              {t("dueToday")}
-            </p>
+            <p className="text-xs text-muted-foreground">{t("dueToday")}</p>
           </div>
         </>
       )}

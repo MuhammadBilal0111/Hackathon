@@ -89,7 +89,7 @@ export function SidebarNav() {
               collapsed ? "text-center text-xl" : "text-2xl"
             )}
           >
-            {collapsed ? "AA" : "AgriAssist"}
+            {collapsed ? "SK" : "Smart Kisaan"}
           </h1>
         </div>
 

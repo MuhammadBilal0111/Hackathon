@@ -12,28 +12,42 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Sparkles, ArrowRight, Github, Mail } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, Mail } from "lucide-react";
 import {
-  signInWithEmail,
+  signUpWithEmail,
   signInWithGoogle,
   getFriendlyErrorMessage,
 } from "@/lib/authService";
 import { toast } from "sonner";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Basic validation
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const { user, error } = await signInWithEmail(email, password);
+      const { user, error } = await signUpWithEmail(email, password);
 
       if (error) {
         toast.error(getFriendlyErrorMessage(error));
@@ -42,7 +56,7 @@ export default function LoginPage() {
       }
 
       if (user) {
-        toast.success("Welcome back!");
+        toast.success("Account created successfully! Welcome aboard!");
         router.push("/dashboard");
       }
     } catch (err) {
@@ -64,7 +78,7 @@ export default function LoginPage() {
       }
 
       if (user) {
-        toast.success("Welcome back!");
+        toast.success("Account created successfully! Welcome aboard!");
         router.push("/dashboard");
       }
     } catch (err) {
@@ -75,21 +89,25 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-[90vh] flex">
-      {/* Right side - Login form */}
+      {/* Right side - Signup form */}
       <div className="flex-1 flex items-center justify-center p-4 bg-gray-50">
         <div className="w-full max-w-md space-y-3">
           <div className="text-center space-y-2">
-            <h2 className="text-3xl font-bold text-primary">Welcome back</h2>
-            <p className="text-gray-600">Please sign in to your account</p>
+            <h2 className="text-3xl font-bold text-primary">
+              Create an account
+            </h2>
+            <p className="text-gray-600">
+              Sign up to get started with your account
+            </p>
           </div>
 
           <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
             <CardHeader className="space-y-1 pb-2">
               <CardTitle className="text-2xl font-semibold text-center text-primary">
-                Sign In
+                Sign Up
               </CardTitle>
               <CardDescription className="text-center text-gray-500">
-                Enter your credentials to access your account
+                Enter your information to create your account
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -118,7 +136,7 @@ export default function LoginPage() {
                       <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
-                        placeholder="Enter your password"
+                        placeholder="Create a password (min. 6 characters)"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -137,22 +155,39 @@ export default function LoginPage() {
                       </button>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex items-center justify-between text-sm">
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                    />
-                    <span className="text-gray-600">Remember me</span>
-                  </label>
-                  <a
-                    href="#"
-                    className="text-green-600 hover:text-green-800 font-medium hover:underline"
-                  >
-                    Forgot password?
-                  </a>
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="confirmPassword"
+                      className="text-sm font-medium"
+                    >
+                      Confirm Password
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="Confirm your password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                        className="h-12 pr-12 border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/20"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="w-5 h-5" />
+                        ) : (
+                          <Eye className="w-5 h-5" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 <Button
@@ -163,11 +198,11 @@ export default function LoginPage() {
                   {isLoading ? (
                     <div className="flex items-center space-x-2">
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Signing in...</span>
+                      <span>Creating account...</span>
                     </div>
                   ) : (
                     <div className="flex items-center space-x-2">
-                      <span>Sign In</span>
+                      <span>Create Account</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </div>
                   )}
@@ -206,12 +241,12 @@ export default function LoginPage() {
               </form>
 
               <div className="mt-6 text-center text-sm text-gray-600">
-                Don&apos;t have an account?{" "}
+                Already have an account?{" "}
                 <a
-                  href="/signup"
+                  href="/login"
                   className="text-green-600 hover:text-green-800 font-medium hover:underline"
                 >
-                  Sign up for free
+                  Sign in
                 </a>
               </div>
             </CardContent>

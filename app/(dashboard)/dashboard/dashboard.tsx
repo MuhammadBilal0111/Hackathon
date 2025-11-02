@@ -18,7 +18,7 @@ export function Dashboard() {
               Welcome back, Farmer
             </h2>
             <p className="text-muted-foreground">
-              Here's an overview of your farm activities
+              Here&apos;s an overview of your farm activities
             </p>
           </div>
 

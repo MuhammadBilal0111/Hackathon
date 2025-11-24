@@ -217,7 +217,7 @@ export function PlanDisplay({
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-1">
-                  {MONTHS.map((month) => {
+                  {MONTHS.map((month, index) => {
                     const monthPlan = planData.annualPlan.find(
                       (m) => m.month === month
                     );
@@ -225,7 +225,7 @@ export function PlanDisplay({
 
                     return (
                       <button
-                        key={`month-selector-${month}`}
+                        key={`month-selector-${month}-${index}`}
                         onClick={() => setSelectedMonth(month)}
                         className={`w-full text-left px-4 py-3 rounded-md transition-colors ${
                           selectedMonth === month
@@ -260,7 +260,7 @@ export function PlanDisplay({
 
                   return (
                     <Card
-                      key={`month-plan-${monthPlan.month}`}
+                      key={`month-plan-${monthPlan.month}-monthIndex-${monthIndex}`}
                       className="shadow-sm"
                     >
                       <CardHeader className="pb-4">

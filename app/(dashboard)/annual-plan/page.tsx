@@ -4,9 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -14,10 +11,7 @@ import {
   CalendarDays,
   Loader2,
   Plus,
-  AlertCircle,
-  CheckCircle2,
-  Clock,
-  Download,
+  
 } from "lucide-react";
 import { db } from "@/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
@@ -83,7 +77,7 @@ export default function AnnualPlanPage() {
       try {
         const userStr = localStorage.getItem("user");
         const parsedUser = userStr ? JSON.parse(userStr) : null;
-        setUserId(parsedUser?.uid || null);
+        setUserId(parsedUser?.uid ?? null);
       } catch (e) {
         console.warn("Failed to parse stored user:", e);
         setUserId(null);
@@ -101,6 +95,7 @@ export default function AnnualPlanPage() {
 
     try {
       setIsLoading(true);
+      // ✅ Type-safe Firestore call
       const planRef = doc(db, "annual_plans", userId);
       const planSnap = await getDoc(planRef);
 
@@ -109,7 +104,6 @@ export default function AnnualPlanPage() {
         setPlanData(data);
         toast.success("Annual plan loaded successfully");
       } else {
-        // No plan exists, show modal
         setIsModalOpen(true);
       }
     } catch (error) {
@@ -122,18 +116,18 @@ export default function AnnualPlanPage() {
 
   // Initial load - wait for userId to be set
   useEffect(() => {
-    if (userId !== null) {
+    if (userId) {
       fetchPlan();
     }
   }, [userId, fetchPlan]);
 
   // Save plan to Firestore
   const savePlanToFirestore = async (data: AnnualPlanData) => {
+    if (!userId) {
+      toast.error("User ID is not available");
+      return false;
+    }
     try {
-      if (!userId) {
-        toast.error("User ID is not available");
-        return false;
-      }
       const planRef = doc(db, "annual_plans", userId);
       await setDoc(planRef, data);
       toast.success("Annual plan saved successfully");
@@ -153,12 +147,9 @@ export default function AnnualPlanPage() {
         id: "generating",
       });
 
-      // Call API to generate plan
       const response = await fetch("/api/annual-plan/generate", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
@@ -170,9 +161,7 @@ export default function AnnualPlanPage() {
       const result = await response.json();
 
       if (result.success && result.data) {
-        // Save to Firestore
         const saved = await savePlanToFirestore(result.data);
-
         if (saved) {
           setPlanData(result.data);
           setIsModalOpen(false);
@@ -187,16 +176,13 @@ export default function AnnualPlanPage() {
       console.error("Error generating plan:", error);
       toast.error(
         error.message || "Failed to generate plan. Please try again.",
-        {
-          id: "generating",
-        }
+        { id: "generating" }
       );
     } finally {
       setIsGenerating(false);
     }
   };
 
-  // Handle regenerate with confirmation
   const handleRegenerateClick = () => {
     setShowConfirmDialog(true);
   };
@@ -215,12 +201,11 @@ export default function AnnualPlanPage() {
     }
   };
 
-  // Update activity status in Firestore
   const handleActivityStatusChange = async (
     monthIndex: number,
     activityIndex: number
   ) => {
-    if (!planData) return;
+    if (!planData || !userId) return;
 
     const updatedPlan = { ...planData };
     const currentStatus =
@@ -238,7 +223,6 @@ export default function AnnualPlanPage() {
     }
   };
 
-  // Loading state
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">

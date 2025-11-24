@@ -1,15 +1,18 @@
 const nextConfig = {
-  /* config options here */
   images: {
-    domains: ["res.cloudinary.com", "via.placeholder.com", "cdn.weatherapi.com"],
+    domains: [
+      "res.cloudinary.com",
+      "via.placeholder.com",
+      "cdn.weatherapi.com",
+    ],
   },
-  // Ignore TypeScript and ESLint errors during build
   typescript: {
     ignoreBuildErrors: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
+  reactStrictMode: false,
 };
 
 export default nextConfig;

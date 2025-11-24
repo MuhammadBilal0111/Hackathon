@@ -208,7 +208,7 @@ export function PlanFormModal({
               </SelectTrigger>
               <SelectContent>
                 {SOIL_TYPES.map((soil) => (
-                  <SelectItem key={soil} value={soil}>
+                  <SelectItem key={`soil-${soil}`} value={soil}>
                     {soil}
                   </SelectItem>
                 ))}
@@ -225,7 +225,7 @@ export function PlanFormModal({
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {COMMON_CROPS.map((crop) => (
                 <button
-                  key={crop}
+                  key={`crop-option-${crop}`}
                   type="button"
                   onClick={() => handleCropToggle(crop)}
                   disabled={isGenerating}
@@ -269,7 +269,7 @@ export function PlanFormModal({
               </SelectTrigger>
               <SelectContent>
                 {WATER_AVAILABILITY.map((water) => (
-                  <SelectItem key={water} value={water}>
+                  <SelectItem key={`water-${water}`} value={water}>
                     {water}
                   </SelectItem>
                 ))}
@@ -290,7 +290,7 @@ export function PlanFormModal({
               </SelectTrigger>
               <SelectContent>
                 {FARMING_TYPES.map((type) => (
-                  <SelectItem key={type} value={type}>
+                  <SelectItem key={`farming-type-${type}`} value={type}>
                     {type}
                   </SelectItem>
                 ))}
@@ -313,7 +313,7 @@ export function PlanFormModal({
               </SelectTrigger>
               <SelectContent>
                 {EXPERIENCE_LEVELS.map((level) => (
-                  <SelectItem key={level} value={level}>
+                  <SelectItem key={`experience-${level}`} value={level}>
                     {level}
                   </SelectItem>
                 ))}

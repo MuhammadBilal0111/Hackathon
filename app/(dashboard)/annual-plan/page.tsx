@@ -25,19 +25,6 @@ import { PlanFormModal } from "./components/plan-form-modal";
 import { PlanDisplay } from "./components/plan-display";
 import { ConfirmDialog } from "./components/confirm-dialog";
 
-// Hardcoded user ID (can be easily replaced with Firebase Auth UID later)
-let USER_ID: string | undefined;
-if (typeof window !== "undefined") {
-  try {
-    const userStr = localStorage.getItem("user");
-    const parsedUser = userStr ? JSON.parse(userStr) : null;
-    USER_ID = parsedUser?.uid;
-  } catch (e) {
-    console.warn("Failed to parse stored user:", e);
-    USER_ID = undefined;
-  }
-}
-
 interface Activity {
   title: string;
   description: string;
@@ -88,12 +75,33 @@ export default function AnnualPlanPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingFormData, setPendingFormData] = useState<any>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Initialize USER_ID on client side only
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const userStr = localStorage.getItem("user");
+        const parsedUser = userStr ? JSON.parse(userStr) : null;
+        setUserId(parsedUser?.uid || null);
+      } catch (e) {
+        console.warn("Failed to parse stored user:", e);
+        setUserId(null);
+      }
+    }
+  }, []);
 
   // Fetch existing plan from Firestore
   const fetchPlan = useCallback(async () => {
+    if (!userId) {
+      setIsLoading(false);
+      setIsModalOpen(true);
+      return;
+    }
+
     try {
       setIsLoading(true);
-      const planRef = doc(db, "annual_plans", USER_ID);
+      const planRef = doc(db, "annual_plans", userId);
       const planSnap = await getDoc(planRef);
 
       if (planSnap.exists()) {
@@ -110,17 +118,23 @@ export default function AnnualPlanPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [userId]);
 
-  // Initial load
+  // Initial load - wait for userId to be set
   useEffect(() => {
-    fetchPlan();
-  }, [fetchPlan]);
+    if (userId !== null) {
+      fetchPlan();
+    }
+  }, [userId, fetchPlan]);
 
   // Save plan to Firestore
   const savePlanToFirestore = async (data: AnnualPlanData) => {
     try {
-      const planRef = doc(db, "annual_plans", USER_ID);
+      if (!userId) {
+        toast.error("User ID is not available");
+        return false;
+      }
+      const planRef = doc(db, "annual_plans", userId);
       await setDoc(planRef, data);
       toast.success("Annual plan saved successfully");
       return true;

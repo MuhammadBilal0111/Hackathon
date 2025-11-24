@@ -167,7 +167,7 @@ export function PlanDisplay({
               <div className="flex flex-wrap gap-1 mt-1">
                 {planData.farmInfo.primaryCrops.map((crop, idx) => (
                   <span
-                    key={idx}
+                    key={`crop-${idx}-${crop}`}
                     className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium"
                   >
                     {crop}
@@ -225,7 +225,7 @@ export function PlanDisplay({
 
                     return (
                       <button
-                        key={month}
+                        key={`month-selector-${month}`}
                         onClick={() => setSelectedMonth(month)}
                         className={`w-full text-left px-4 py-3 rounded-md transition-colors ${
                           selectedMonth === month
@@ -259,7 +259,10 @@ export function PlanDisplay({
                   const stats = getMonthStats(monthPlan);
 
                   return (
-                    <Card key={monthPlan.month} className="shadow-sm">
+                    <Card
+                      key={`month-plan-${monthPlan.month}`}
+                      className="shadow-sm"
+                    >
                       <CardHeader className="pb-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
@@ -289,7 +292,7 @@ export function PlanDisplay({
                           {monthPlan.activities.map(
                             (activity, activityIndex) => (
                               <div
-                                key={activityIndex}
+                                key={`activity-${monthPlan.month}-${activityIndex}-${activity.title}`}
                                 className={`bg-white border rounded-lg p-5 transition-all ${
                                   activity.status === "completed"
                                     ? "opacity-60"
@@ -364,7 +367,10 @@ export function PlanDisplay({
         <TabsContent value="tips" className="space-y-4 mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {planData.seasonalTips.map((seasonalTip, idx) => (
-              <Card key={idx} className="border-l-4 border-l-yellow-500">
+              <Card
+                key={`season-${seasonalTip.season}-${idx}`}
+                className="border-l-4 border-l-yellow-500"
+              >
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Lightbulb className="h-5 w-5 text-yellow-600" />
@@ -375,7 +381,7 @@ export function PlanDisplay({
                   <ul className="space-y-2">
                     {seasonalTip.tips.map((tip, tipIdx) => (
                       <li
-                        key={tipIdx}
+                        key={`tip-${seasonalTip.season}-${tipIdx}`}
                         className="flex items-start gap-2 text-sm"
                       >
                         <span className="text-yellow-600 mt-0.5">•</span>
@@ -406,7 +412,7 @@ export function PlanDisplay({
               <div className="space-y-3">
                 {planData.criticalDates.map((date, idx) => (
                   <div
-                    key={idx}
+                    key={`critical-date-${idx}-${date.date}-${date.event}`}
                     className="flex items-center gap-16 p-4 bg-red-50 border border-red-200 rounded-lg"
                   >
                     <div className="shrink-0 w-16 text-center">

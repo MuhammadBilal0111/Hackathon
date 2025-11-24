@@ -361,7 +361,9 @@ export default function CheckoutPage() {
                           </p>
                           <p className="text-sm mt-1">
                             Rs {item.price} × {item.qty} ={" "}
-                            <span className="font-semibold">Rs {item.total}</span>
+                            <span className="font-semibold">
+                              Rs {item.total}
+                            </span>
                           </p>
                         </div>
                       </div>
@@ -578,13 +580,13 @@ export default function CheckoutPage() {
                   )}
 
                   {/* Security Info */}
-                  <div className="mb-6 flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <Shield className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <div className="mb-6 flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <Shield className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                     <div className="text-sm">
-                      <p className="font-semibold text-blue-900">
+                      <p className="font-semibold text-green-900">
                         Your payment is secure
                       </p>
-                      <p className="text-blue-800">
+                      <p className="text-green-800">
                         All transactions are encrypted and secured with SSL
                         technology.
                       </p>

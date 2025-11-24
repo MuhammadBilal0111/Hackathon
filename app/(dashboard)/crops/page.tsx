@@ -39,14 +39,21 @@ export default function CropsPage() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [conditionFilter, setConditionFilter] = useState("");
 
+  let USER_ID: string | undefined;
+  if (typeof window !== "undefined") {
+    try {
+      const userStr = localStorage.getItem("user");
+      const parsedUser = userStr ? JSON.parse(userStr) : null;
+      USER_ID = parsedUser?.uid;
+    } catch (e) {
+      console.warn("Failed to parse stored user:", e);
+      USER_ID = undefined;
+    }
+  }
   // Mock farmer ID - in real app, this would come from auth context
-  const farmerId = "6gkZbTyO5xvYpL3Jh1Rw";
+  const farmerId = USER_ID || "";
 
-  useEffect(() => {
-    loadCrops();
-  }, []);
-
-  const loadCrops = async () => {
+  const loadCrops = useCallback(async () => {
     try {
       setLoading(true);
       const allCrops = await getAllCrops({ farmerId });
@@ -57,7 +64,11 @@ export default function CropsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [farmerId]);
+
+  useEffect(() => {
+    loadCrops();
+  }, [loadCrops]);
 
   const filterCrops = useCallback(() => {
     let filtered = [...crops];
@@ -270,7 +281,7 @@ export default function CropsPage() {
             <div className="space-y-2">
               <Label>Condition</Label>
               {conditions.length != 0 && (
-              <Select
+                <Select
                   value={conditionFilter}
                   onValueChange={setConditionFilter}
                   disabled={conditions.length === 0}

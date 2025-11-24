@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VendorProductForm } from "@/components/forms/vendor-product-form";
 import { getProductsByVendorUid, type Product } from "@/lib/firebase-products";
 import {
@@ -162,6 +162,7 @@ export default function VendorDashboard() {
 
         {/* Product Form Dialog */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTitle>{formMode === "create" ? "Add New Product" : "Edit Product"}</DialogTitle>
           <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <VendorProductForm
               mode={formMode}

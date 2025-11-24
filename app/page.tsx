@@ -15,6 +15,7 @@ import {
   Smartphone,
 } from "lucide-react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 const Header = dynamic(() => import("@/components/shared/header"), {
   ssr: false,
@@ -126,7 +127,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-lime-50 to-yellow-50">
-      <Header />
+      <Header
+        selectedLanguage={selectedLanguage}
+        setSelectedLanguage={setSelectedLanguage}
+      />
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="container mx-auto px-6 lg:px-8 py-20">
@@ -137,12 +141,7 @@ export default function Home() {
               }`}
             >
               <div className="space-y-4">
-                <div className="inline-flex items-center space-x-2 bg-green-100 px-4 py-2 rounded-full text-green-700">
-                  <Sprout className="w-5 h-5" />
-                  <span className="font-medium">
-                    Pakistan&apos;s #1 Farm Tech Platform
-                  </span>
-                </div>
+                <div className="inline-flex items-center space-x-2 bg-green-100 px-4 py-2 rounded-full text-green-700"></div>
                 <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
                   {currentContent.hero.title}
                   <br />
@@ -203,80 +202,14 @@ export default function Home() {
 
             {/* Hero Image/Illustration */}
             <div className="relative">
-              <div className="relative z-10 bg-gradient-to-br from-green-100 to-lime-100 rounded-2xl p-8 shadow-2xl">
-                <div className="grid grid-cols-2 gap-6">
-                  <Card className="bg-white/80 backdrop-blur-sm border-green-200">
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                          <Camera className="w-6 h-6 text-green-600" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-green-900">
-                            Crop Analysis
-                          </div>
-                          <div className="text-sm text-green-600">
-                            AI Powered
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-white/80 backdrop-blur-sm border-lime-200">
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-lime-100 rounded-lg flex items-center justify-center">
-                          <CloudSun className="w-6 h-6 text-lime-600" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-lime-900">
-                            Weather Insights
-                          </div>
-                          <div className="text-sm text-lime-600">
-                            Real-time Data
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-white/80 backdrop-blur-sm border-yellow-200">
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                          <Calendar className="w-6 h-6 text-yellow-600" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-yellow-900">
-                            Annual Planning
-                          </div>
-                          <div className="text-sm text-yellow-600">
-                            Customized
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-white/80 backdrop-blur-sm border-green-200">
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                          <Globe className="w-6 h-6 text-green-600" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-green-900">
-                            Multi-Language
-                          </div>
-                          <div className="text-sm text-green-600">
-                            EN/UR Support
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
+              <div className="relative z-10 bg-gradient-to-br from-green-100 to-lime-100 rounded-2xl p-1 shadow-2xl">
+                <Image
+                  src="/field_bg.jpg"
+                  className="rounded-lg"
+                  width={800}
+                  height={400}
+                  alt="Hero Image"
+                />
               </div>
 
               {/* Floating elements */}
@@ -406,7 +339,7 @@ export default function Home() {
             <Button
               size="lg"
               variant="outline"
-              className="border-2 border-white text-white hover:bg-white hover:text-green-600 px-8 py-4 text-lg font-semibold transition-all duration-200"
+              className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-green-600 px-8 py-4 text-lg font-semibold transition-all duration-200"
             >
               Contact Sales
             </Button>

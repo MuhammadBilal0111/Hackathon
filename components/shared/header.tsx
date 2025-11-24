@@ -7,8 +7,13 @@ import { Leaf, User, LogOut } from "lucide-react";
 import { logoutUser } from "@/lib/authService";
 import { useRouter } from "next/navigation";
 
-export default function Header() {
-  const [selectedLanguage, setSelectedLanguage] = useState("en");
+export default function Header({
+  selectedLanguage,
+  setSelectedLanguage,
+}: {
+  selectedLanguage: string;
+  setSelectedLanguage: (lang: string) => void;
+}) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState<string>("");
   const router = useRouter();

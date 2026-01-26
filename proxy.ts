@@ -7,7 +7,7 @@ const publicRoutes = ["/", "/login", "/signup"];
 // Define routes that should redirect to dashboard if user is already authenticated
 const authRoutes = ["/login", "/signup"];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Get auth token from cookies
